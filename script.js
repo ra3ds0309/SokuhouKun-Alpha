@@ -12,7 +12,7 @@ function showError(code, message) {
     div.className = 'error-msg';
     div.innerHTML = `<strong>[ERROR:${code}]</strong><br>${message}`;
     container.appendChild(div);
-    setTimeout(() => div.remove(), 5000);
+    setTimeout(() => div.remove(), 6000);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -20,11 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateStyles();
     updateClock();
     setInterval(updateClock, 1000);
-    
-    // 「s」キーで設定ページへ移動
-    window.addEventListener('keydown', (e) => {
-        if (e.key.toLowerCase() === 's') window.location.href = "settings.html";
-    });
 });
 
 function updateClock() {
@@ -40,12 +35,16 @@ window.onYouTubeIframeAPIReady = function() {
             videoId: videoId || 'dfVK7ld38Ys',
             playerVars: { 'autoplay': 1, 'mute': 1, 'controls': 0, 'origin': location.origin },
             events: {
-                'onReady': (e) => { e.target.playVideo(); updateCameraDisplay(); setInterval(switchNextCamera, 180000); },
-                'onError': (e) => showError("YT_ERR_" + e.data, "YouTubeの再生に失敗しました。")
+                'onReady': (e) => { 
+                    e.target.playVideo(); 
+                    updateCameraDisplay(); 
+                    setInterval(switchNextCamera, 180000); 
+                },
+                'onError': (e) => showError("YT_PLAY_" + e.data, "動画の再生に失敗しました。URLを確認してください。")
             }
         });
     } catch (e) {
-        showError("YT_INIT_FAIL", "プレイヤーの起動に失敗しました。");
+        showError("YT_INIT", "YouTubeプレイヤーの起動に失敗しました。");
     }
 };
 
@@ -53,7 +52,7 @@ function switchNextCamera() {
     if (settings.cameras.length <= 1) return;
     currentCameraIndex = (currentCameraIndex + 1) % settings.cameras.length;
     const nextId = extractVideoId(settings.cameras[currentCameraIndex].url);
-    if (nextId && currentPlayer.loadVideoById) {
+    if (nextId && currentPlayer && currentPlayer.loadVideoById) {
         currentPlayer.loadVideoById(nextId);
         updateCameraDisplay();
     }
@@ -80,5 +79,6 @@ function updateCameraDisplay() {
 function extractVideoId(url) {
     if (!url) return null;
     const parts = url.split('/');
-    return parts[parts.length - 1].split('?')[0];
+    const lastPart = parts[parts.length - 1];
+    return lastPart.split('?')[0];
 }
