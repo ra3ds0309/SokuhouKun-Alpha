@@ -1,0 +1,158 @@
+/* --- 1. フォントの設定 --- */
+@font-face {
+    font-family: 'UD Shin Go';
+    src: url('assets/fonts/A-OTF-UDShinGoPr6-Medium.otf');
+}
+@font-face {
+    font-family: 'New Rodin';
+    src: url('assets/fonts/FOT-NewRodinPro-DB.otf');
+}
+@font-face {
+    font-family: 'Rodin NTLG';
+    src: url('assets/fonts/FOT-RodinNTLGPro-DB.otf');
+}
+@font-face {
+    font-family: 'UD Kakugo';
+    src: url('assets/fonts/FOT-UDKakugo_LargePr6-M.otf');
+}
+
+/* --- 2. 全体レイアウト --- */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    color: white;
+    font-family: 'UD Shin Go', sans-serif; /* デフォルト */
+}
+
+/* 背景動画エリア */
+#video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none; /* 動画へのクリックを無効化 */
+}
+
+#player {
+    width: 100%;
+    height: 100%;
+    transform: scale(1.1); /* 黒縁を隠すために少し拡大 */
+}
+
+/* --- 3. 速報スーパー --- */
+#ticker-container {
+    position: absolute;
+    top: 30px; /* 少し浮かせるのがテレビ風 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    display: flex;
+    align-items: center;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    transition: opacity 0.5s;
+}
+
+/* 「ニュース速報」ラベル */
+.ticker-label {
+    background: linear-gradient(to bottom, #d32f2f, #b71c1c);
+    color: white;
+    padding: 8px 20px;
+    font-weight: bold;
+    font-size: 24px;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #b71c1c;
+    white-space: nowrap;
+    z-index: 2;
+}
+
+/* 速報本文の座布団 */
+.ticker-text {
+    background: rgba(0, 0, 50, 0.85); /* 深い紺色 */
+    padding: 10px 30px;
+    font-size: 32px;
+    width: 100%;
+    border: 2px solid white;
+    margin-left: -2px; /* ラベルと重ねる */
+    white-space: nowrap;
+    overflow: hidden;
+    /* 動的な文字設定はJSから上書き可能にする */
+    -webkit-text-stroke: 4px black;
+    paint-order: stroke fill;
+}
+
+/* --- 4. ライブカメラ情報（右下） --- */
+#camera-info {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    text-align: right;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#camera-location {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* --- 5. 設定画面（モーダル） --- */
+.modal-hidden {
+    display: none;
+}
+
+#settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #222;
+    padding: 30px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid #444;
+}
+
+h2, h3 { border-bottom: 1px solid #444; padding-bottom: 5px; }
+
+section { margin-bottom: 20px; }
+
+input, select {
+    margin: 5px 0;
+    padding: 5px;
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+}
+
+button {
+    background: #0078d4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.hidden {
+    opacity: 0;
+}
