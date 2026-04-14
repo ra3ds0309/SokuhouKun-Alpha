@@ -2,6 +2,7 @@
 @font-face { font-family: 'UD Shin Go'; src: url('assets/fonts/A-OTF-UDShinGoPr6-Medium.otf'); }
 @font-face { font-family: 'New Rodin'; src: url('assets/fonts/FOT-NewRodinPro-DB.otf'); }
 @font-face { font-family: 'Rodin NTLG'; src: url('assets/fonts/FOT-RodinNTLGPro-DB.otf'); }
+/* 角ゴシックのファイル名修正 */
 @font-face { font-family: 'UD Kakugo'; src: url('assets/fonts/FOT-UDKakugo_LargePr6-DB.otf'); }
 
 /* --- 2. 全体設定 --- */
@@ -9,73 +10,102 @@ body, html {
     margin: 0; padding: 0; width: 100%; height: 100%;
     overflow: hidden; background-color: #000; color: white;
     font-family: 'UD Shin Go', sans-serif;
-    font-feature-settings: "palt";
+    font-feature-settings: "palt"; /* 文字詰め */
 }
 
+/* YouTubeプレイヤー */
 #video-container {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: -1; pointer-events: none;
+    z-index: 1; /* 一番下 */
 }
-
 #player { width: 100%; height: 100%; transform: scale(1.1); }
 
-/* --- 3. 速報スーパー --- */
-#ticker-container {
-    position: absolute; top: 30px; left: 50%;
-    transform: translateX(-50%); width: 90%;
-    display: flex; align-items: center;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
-    transition: opacity 0.5s;
+/* UIオーバーレイ：★最重要：クリックを下のYouTubeに透過させる */
+#ui-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 10;
+    pointer-events: none; /* ★自分（透明な背景）へのクリックは無視 */
 }
 
-.ticker-label {
-    background: linear-gradient(to bottom, #d32f2f, #b71c1c);
-    color: white; padding: 8px 20px; font-weight: bold; font-size: 24px;
-    border: 2px solid white; box-shadow: 0 0 0 2px #b71c1c;
-    white-space: nowrap; font-feature-settings: "palt";
+/* UIエリア内の、実際にクリックさせたい要素（時計ボックスやテロップ文字）は
+   `pointer-events: auto;` でクリック可能にする必要があるが、
+   今回は文字表示だけなので不要。設定画面だけ別 z-index で管理。 */
+
+/* --- 3. UIデザイン（画像再現） --- */
+
+#header-container {
+    display: flex;
+    align-items: flex-start;
+    padding: 30px; /* 画面端からの余白 */
 }
 
-.ticker-text {
-    background: rgba(0, 0, 50, 0.85); padding: 10px 30px;
-    font-size: 32px; width: 100%; border: 2px solid white;
-    margin-left: -2px; white-space: nowrap; overflow: hidden;
-    -webkit-text-stroke: 4px black; paint-order: stroke fill;
-    font-feature-settings: "palt";
+/* 左側：時計・場所ボックス */
+#info-box {
+    background: rgba(0, 0, 0, 0.85); /* 黒バック、角丸 */
+    padding: 15px 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    margin-right: 25px; /* 速報テキストとの間隔 */
 }
 
-/* --- 4. 場所（右上）・URL（右下） --- */
-#location-box {
-    position: absolute; top: 30px; right: 30px;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 8px 20px;
-    border-radius: 2px;
-    border-left: 6px solid #d32f2f;
-    z-index: 5;
+#clock-display {
+    font-size: 64px; /* デカデカと */
+    font-weight: bold;
+    line-height: 1;
+    margin-bottom: 5px;
 }
 
-#camera-location { font-size: 26px; font-weight: bold; }
+#camera-location {
+    font-size: 18px;
+    color: #ccc;
+}
 
+/* 右側：速報テキスト（★座布団なし） */
+#ticker-container {
+    flex-grow: 1;
+    transition: opacity 0.5s;
+}
+
+#ticker-content {
+    font-size: 36px; /* 画像のイメージ */
+    font-weight: bold;
+    color: white;
+    line-height: 1.2;
+    /* ★極太縁取り（画像再現） */
+    -webkit-text-stroke: 6px black;
+    paint-order: stroke fill;
+    /* ドロップシャドウも併用して視認性確保 */
+    filter: drop-shadow(0 0 5px rgba(0,0,0,1));
+}
+
+/* 画面右下：URL（8px） */
 #url-box {
     position: absolute; bottom: 5px; right: 10px;
-    font-size: 8px; color: rgba(255, 255, 255, 0.4);
-    background: rgba(0, 0, 0, 0.2); padding: 1px 4px;
-    z-index: 5;
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1px 4px;
+    font-feature-settings: normal;
 }
 
-/* --- 5. 設定画面 --- */
+/* --- 4. 設定画面 --- */
 .modal-hidden { display: none !important; }
+
 #settings-modal {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85); z-index: 100;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 100; /* UIオーバーレイより上 */
     display: flex; justify-content: center; align-items: center;
+    /* ★設定画面の中はクリックできるようにする */
+    pointer-events: auto;
 }
+
 .modal-content {
     background: #1a1a1a; padding: 30px; border-radius: 12px;
     width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto;
     border: 1px solid #333;
 }
-.cam-input-row { display: flex; gap: 10px; margin-bottom: 10px; }
-input[type="text"] { background: #333; color: white; border: 1px solid #555; padding: 5px; }
-.hint { font-size: 12px; color: #aaa; margin-top: 15px; }
+
+/* JSでのフェードイン・アウト用 */
 .hidden { opacity: 0; }
