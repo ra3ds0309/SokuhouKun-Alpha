@@ -1,95 +1,84 @@
-/* --- 1. フォント定義 --- */
-@font-face { font-family: 'UD Shin Go'; src: url('assets/fonts/A-OTF-UDShinGoPr6-Medium.otf'); }
-@font-face { font-family: 'New Rodin'; src: url('assets/fonts/FOT-NewRodinPro-DB.otf'); }
-@font-face { font-family: 'Rodin NTLG'; src: url('assets/fonts/FOT-RodinNTLGPro-DB.otf'); }
-@font-face { font-family: 'UD Kakugo'; src: url('assets/fonts/FOT-UDKakugo_LargePr6-DB.otf'); }
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>速報くんα - 設定</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 設定ページ専用の背景 */
+        body { background: #1a1a1a; overflow-y: auto; padding: 40px; }
+        .settings-container { max-width: 800px; margin: 0 auto; background: #222; padding: 30px; border-radius: 12px; border: 1px solid #333; }
+        h2 { border-bottom: 2px solid #d32f2f; padding-bottom: 10px; }
+        .btn-group { margin-top: 30px; display: flex; gap: 10px; }
+        .back-link { color: #aaa; text-decoration: none; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <h2>速報くんα 設定</h2>
+        
+        <section>
+            <h3>フォント設定</h3>
+            <select id="font-select">
+                <option value="'UD Shin Go', sans-serif">UD新ゴ</option>
+                <option value="'UD Kakugo', sans-serif">UD角ゴ</option>
+                <option value="'New Rodin', sans-serif">ニューロダン</option>
+                <option value="'Rodin NTLG', sans-serif">ロダンNTLG</option>
+            </select>
+        </section>
 
-/* --- 2. 基本・レイヤー設定 --- */
-body, html {
-    margin: 0; padding: 0; width: 100%; height: 100%;
-    overflow: hidden; background-color: #000; color: white;
-    font-family: 'UD Shin Go', sans-serif;
-    font-feature-settings: "palt";
-}
+        <section>
+            <h3>ライブカメラ登録（最大10件）</h3>
+            <div id="camera-inputs"></div>
+        </section>
 
-#video-container {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 1; pointer-events: none;
-}
-#player { width: 100%; height: 100%; transform: scale(1.1); }
+        <div class="btn-group">
+            <button id="save-settings" style="background:#d32f2f;">設定を保存して戻る</button>
+            <a href="index.html" class="back-link" style="margin-top:15px; display:block;">保存せずに戻る</a>
+        </div>
+    </div>
 
-#ui-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 10; pointer-events: none;
-}
+    <script>
+        // 設定ページ専用の簡易スクリプト
+        let settings = { font: "'UD Shin Go', sans-serif", cameras: [] };
 
-/* --- 3. UIデザイン --- */
-#header-container {
-    display: flex; align-items: flex-start; padding: 0 30px;
-}
+        function load() {
+            const saved = localStorage.getItem('sokuhoSettings');
+            if (saved) {
+                settings = JSON.parse(saved);
+                document.getElementById('font-select').value = settings.font;
+            }
+            const container = document.getElementById('camera-inputs');
+            for (let i = 0; i < 10; i++) {
+                const cam = settings.cameras[i] || { url: "", location: "" };
+                container.innerHTML += `<div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" class="cam-loc" value="${cam.location}" placeholder="場所" style="width:120px; background:#333; color:white; border:1px solid #555; padding:8px;">
+                    <input type="text" class="cam-url" value="${cam.url}" placeholder="iframeのURL" style="flex-grow:1; background:#333; color:white; border:1px solid #555; padding:8px;">
+                </div>`;
+            }
+        }
 
-#info-box {
-    background: #262626; padding: 15px 25px;
-    border-radius: 0 0 12px 12px; text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-right: 25px;
-}
+        document.getElementById('save-settings').onclick = () => {
+            settings.font = document.getElementById('font-select').value;
+            const urls = document.getElementsByClassName('cam-url');
+            const locs = document.getElementsByClassName('cam-loc');
+            settings.cameras = [];
+            for (let i = 0; i < urls.length; i++) {
+                let val = urls[i].value.trim();
+                if (val) {
+                    if (val.includes("<iframe")) {
+                        const match = val.match(/src=["'](.+?)["']/);
+                        val = match ? match[1] : val;
+                    }
+                    settings.cameras.push({ url: val, location: locs[i].value });
+                }
+            }
+            localStorage.setItem('sokuhoSettings', JSON.stringify(settings));
+            window.location.href = "index.html"; // 保存して戻る
+        };
 
-#clock-display { font-size: 64px; font-weight: bold; line-height: 1; margin-bottom: 2px; }
-#camera-location { font-size: 18px; color: #aaa; }
-
-#ticker-container { margin-top: 30px; flex-grow: 1; transition: opacity 0.5s; }
-#ticker-content {
-    font-size: 38px; font-weight: bold; color: white; line-height: 1.1;
-    -webkit-text-stroke: 7px black; paint-order: stroke fill;
-    filter: drop-shadow(0 0 5px rgba(0,0,0,1));
-}
-
-#url-box { position: absolute; bottom: 5px; right: 10px; font-size: 8px; color: rgba(255, 255, 255, 0.3); }
-
-/* --- 4. 最前面エラーボックス --- */
-#error-container {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-    z-index: 20000; width: 80%; max-width: 600px; pointer-events: none;
-}
-
-.error-msg {
-    background: #d32f2f; color: white; padding: 15px 20px;
-    border-radius: 8px; margin-bottom: 10px; font-weight: bold;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    animation: fadeInDown 0.5s ease-out, fadeOut 0.5s 4.5s ease-in forwards;
-}
-
-@keyframes fadeInDown {
-    from { opacity: 0; transform: translate(-50%, -20px); left: 50%; }
-    to { opacity: 1; transform: translate(-50%, 0); left: 50%; }
-}
-@keyframes fadeOut { to { opacity: 0; } }
-
-/* --- 5. 設定ボタン（独立） --- */
-#fixed-settings-trigger {
-    position: fixed; bottom: 20px; left: 20px;
-    z-index: 10000; width: 45px; height: 45px;
-    background: rgba(0, 0, 0, 0.5); color: rgba(255, 255, 255, 0.4);
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 50%; cursor: pointer; font-size: 24px;
-    pointer-events: auto; transition: 0.3s;
-}
-#fixed-settings-trigger:hover {
-    background: rgba(255, 255, 255, 0.2); color: white;
-}
-
-/* --- 6. モーダル --- */
-.modal-hidden { display: none !important; }
-#settings-modal {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.9); z-index: 15000;
-    display: flex; justify-content: center; align-items: center;
-    pointer-events: auto;
-}
-.modal-content {
-    background: #1a1a1a; padding: 30px; border-radius: 12px;
-    width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; border: 1px solid #333;
-}
-input[type="text"], select { background: #333; color: white; border: 1px solid #555; padding: 8px; margin: 5px 0; }
-button { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
-.hidden { opacity: 0; }
+        load();
+    </script>
+</body>
+</html>
