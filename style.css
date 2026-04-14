@@ -2,7 +2,6 @@
 @font-face { font-family: 'UD Shin Go'; src: url('assets/fonts/A-OTF-UDShinGoPr6-Medium.otf'); }
 @font-face { font-family: 'New Rodin'; src: url('assets/fonts/FOT-NewRodinPro-DB.otf'); }
 @font-face { font-family: 'Rodin NTLG'; src: url('assets/fonts/FOT-RodinNTLGPro-DB.otf'); }
-/* 角ゴシックのファイル名修正 */
 @font-face { font-family: 'UD Kakugo'; src: url('assets/fonts/FOT-UDKakugo_LargePr6-DB.otf'); }
 
 /* --- 2. 全体設定 --- */
@@ -10,83 +9,76 @@ body, html {
     margin: 0; padding: 0; width: 100%; height: 100%;
     overflow: hidden; background-color: #000; color: white;
     font-family: 'UD Shin Go', sans-serif;
-    font-feature-settings: "palt"; /* 文字詰め */
+    font-feature-settings: "palt";
 }
 
-/* YouTubeプレイヤー */
 #video-container {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 1; /* 一番下 */
+    z-index: 1;
 }
 #player { width: 100%; height: 100%; transform: scale(1.1); }
 
-/* UIオーバーレイ：★最重要：クリックを下のYouTubeに透過させる */
 #ui-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 10;
-    pointer-events: none; /* ★自分（透明な背景）へのクリックは無視 */
+    pointer-events: none;
 }
 
-/* UIエリア内の、実際にクリックさせたい要素（時計ボックスやテロップ文字）は
-   `pointer-events: auto;` でクリック可能にする必要があるが、
-   今回は文字表示だけなので不要。設定画面だけ別 z-index で管理。 */
-
-/* --- 3. UIデザイン（画像再現） --- */
+/* --- 3. UIデザイン（修正：時計ボックス） --- */
 
 #header-container {
     display: flex;
     align-items: flex-start;
-    padding: 30px; /* 画面端からの余白 */
+    padding: 0 30px; /* 上はボックス自体が0pxなので詰め気味に */
 }
 
 /* 左側：時計・場所ボックス */
 #info-box {
-    background: rgba(0, 0, 0, 0.85); /* 黒バック、角丸 */
-    padding: 15px 25px;
-    border-radius: 15px;
+    background: #262626;
+    padding: 10px 25px 15px 25px;
+    /* 上側0px、下側12pxの角丸 */
+    border-radius: 0 0 12px 12px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    margin-right: 25px; /* 速報テキストとの間隔 */
+    margin-right: 25px;
 }
 
 #clock-display {
-    font-size: 64px; /* デカデカと */
+    font-size: 64px;
     font-weight: bold;
     line-height: 1;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
 }
 
 #camera-location {
     font-size: 18px;
-    color: #ccc;
+    color: #aaa;
+    font-weight: normal;
 }
 
-/* 右側：速報テキスト（★座布団なし） */
+/* 右側：速報テキスト（縁取り強調） */
 #ticker-container {
+    margin-top: 30px; /* 時計の高さに合わせる */
     flex-grow: 1;
     transition: opacity 0.5s;
 }
 
 #ticker-content {
-    font-size: 36px; /* 画像のイメージ */
+    font-size: 38px;
     font-weight: bold;
     color: white;
-    line-height: 1.2;
-    /* ★極太縁取り（画像再現） */
-    -webkit-text-stroke: 6px black;
+    line-height: 1.1;
+    -webkit-text-stroke: 7px black; /* 画像に合わせ少し太めに */
     paint-order: stroke fill;
-    /* ドロップシャドウも併用して視認性確保 */
     filter: drop-shadow(0 0 5px rgba(0,0,0,1));
 }
 
-/* 画面右下：URL（8px） */
 #url-box {
     position: absolute; bottom: 5px; right: 10px;
     font-size: 8px;
     color: rgba(255, 255, 255, 0.3);
     background: rgba(0, 0, 0, 0.2);
     padding: 1px 4px;
-    font-feature-settings: normal;
 }
 
 /* --- 4. 設定画面 --- */
@@ -95,9 +87,8 @@ body, html {
 #settings-modal {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.85);
-    z-index: 100; /* UIオーバーレイより上 */
+    z-index: 100;
     display: flex; justify-content: center; align-items: center;
-    /* ★設定画面の中はクリックできるようにする */
     pointer-events: auto;
 }
 
@@ -106,6 +97,4 @@ body, html {
     width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto;
     border: 1px solid #333;
 }
-
-/* JSでのフェードイン・アウト用 */
 .hidden { opacity: 0; }
