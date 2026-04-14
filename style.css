@@ -1,41 +1,65 @@
-/* フォント設定は維持 */
+/* --- フォント定義 --- */
 @font-face { font-family: 'UD Shin Go'; src: url('assets/fonts/A-OTF-UDShinGoPr6-Medium.otf'); }
-/* (他のフォントも同様に記述) */
+@font-face { font-family: 'New Rodin'; src: url('assets/fonts/FOT-NewRodinPro-DB.otf'); }
+@font-face { font-family: 'Rodin NTLG'; src: url('assets/fonts/FOT-RodinNTLGPro-DB.otf'); }
+@font-face { font-family: 'UD Kakugo'; src: url('assets/fonts/FOT-UDKakugo_LargePr6-DB.otf'); }
 
-body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; color: white; }
+body, html {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    overflow: hidden; background-color: #000; color: white;
+    font-family: 'UD Shin Go', sans-serif;
+    font-feature-settings: "palt";
+}
 
-#video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+#video-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1; pointer-events: none;
+}
 #player { width: 100%; height: 100%; transform: scale(1.1); }
 
-#ui-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
+#ui-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 10; pointer-events: none;
+}
 
-/* 時計・座布団 */
+/* 時計ボックス（座布団を上につなげる） */
 #header-container { display: flex; align-items: flex-start; padding: 0 30px; }
 #info-box {
     background: #262626; padding: 15px 25px;
     border-radius: 0 0 12px 12px; text-align: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-right: 25px;
 }
-#clock-display { font-size: 64px; font-weight: bold; line-height: 1; }
+#clock-display { font-size: 64px; font-weight: bold; line-height: 1; margin-bottom: 2px; }
 #camera-location { font-size: 18px; color: #aaa; }
 
+/* 速報テキスト */
 #ticker-container { margin-top: 30px; flex-grow: 1; transition: opacity 0.5s; }
 #ticker-content {
-    font-size: 38px; font-weight: bold; color: white;
+    font-size: 38px; font-weight: bold; color: white; line-height: 1.1;
     -webkit-text-stroke: 7px black; paint-order: stroke fill;
     filter: drop-shadow(0 0 5px rgba(0,0,0,1));
 }
 
-/* 左下の設定ボタン（リンク） */
+#url-box { position: absolute; bottom: 5px; right: 10px; font-size: 8px; color: rgba(255, 255, 255, 0.3); }
+
+/* 左下設定ボタン（独立） */
 #fixed-settings-trigger {
     position: fixed; bottom: 20px; left: 20px; z-index: 10000;
     width: 45px; height: 45px; background: rgba(0, 0, 0, 0.5);
     color: rgba(255, 255, 255, 0.4); text-decoration: none;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 50%; font-size: 24px; pointer-events: auto;
+    border-radius: 50%; font-size: 24px; pointer-events: auto; transition: 0.3s;
 }
 #fixed-settings-trigger:hover { background: rgba(255, 255, 255, 0.2); color: white; }
 
 /* エラー通知 */
-#error-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 20000; pointer-events: none; }
-.error-msg { background: #d32f2f; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+#error-container {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    z-index: 20000; width: 80%; max-width: 600px; pointer-events: none;
+}
+.error-msg {
+    background: #d32f2f; color: white; padding: 15px 20px;
+    border-radius: 8px; margin-bottom: 10px; font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.hidden { opacity: 0; }
