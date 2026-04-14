@@ -44,21 +44,24 @@ body, html {
     font-feature-settings: "palt";
 }
 
-/* --- 4. 場所・URL表示 --- */
+/* --- 4. 場所（右上）・URL（右下） --- */
 #location-box {
-    position: absolute; top: 100px; right: 30px;
+    position: absolute; top: 30px; right: 30px;
     background: rgba(0, 0, 0, 0.6); padding: 5px 15px;
     border-radius: 5px; display: flex; align-items: center;
     border-left: 4px solid #d32f2f;
+    z-index: 5;
 }
 
 #location-box .material-icons { margin-right: 8px; font-size: 20px; color: #ff5252; }
 #camera-location { font-size: 24px; font-weight: bold; }
 
 #url-box {
-    position: absolute; bottom: 10px; right: 15px;
-    font-size: 10px; color: rgba(255, 255, 255, 0.4);
-    background: rgba(0, 0, 0, 0.3); padding: 2px 5px;
+    position: absolute; bottom: 5px; right: 10px;
+    font-size: 8px; color: rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.2); padding: 1px 4px;
+    z-index: 5;
+    font-feature-settings: normal; /* URLは詰めない */
 }
 
 /* --- 5. 設定画面 --- */
