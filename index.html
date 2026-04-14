@@ -12,19 +12,25 @@
         <div id="player"></div>
     </div>
 
-    <div id="ticker-container" class="hidden">
-        <div class="ticker-label">ニュース速報</div>
-        <div class="ticker-text" id="ticker-content">
-            ここに速報の内容が表示されます。
+    <div id="ui-overlay">
+        
+        <div id="header-container">
+            <div id="info-box">
+                <div id="clock-display">XX:XX</div>
+                <div id="camera-location">カメラ場所</div>
+            </div>
+
+            <div id="ticker-container" class="hidden">
+                <div id="ticker-content">
+                    テスト速報あああああああああああああああああ<br>
+                    最大2行・最大21文字
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div id="location-box">
-        <span id="camera-location">場所の名前</span>
-    </div>
-
-    <div id="url-box">
-        <span id="camera-url-display">URL</span>
+        <div id="url-box">
+            <span id="camera-url-display">URL</span>
+        </div>
     </div>
 
     <div id="settings-modal" class="modal-hidden">
@@ -34,7 +40,7 @@
             <section>
                 <h3>テスト送信</h3>
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="test-text" placeholder="テストする文字を入力" style="flex-grow: 1;">
+                    <input type="text" id="test-text" placeholder="テスト文字（2行は <br> を使用）" style="flex-grow: 1;">
                     <button id="btn-test">送信</button>
                 </div>
             </section>
@@ -50,15 +56,12 @@
                     </select>
                 </label>
                 <br>
-                <label>文字色: <input type="color" id="text-color" value="#ffffff"></label>
-                <br>
-                <label>枠線色: <input type="color" id="stroke-color" value="#000000"></label>
-                <br>
-                <label>枠線太さ: <input type="range" id="stroke-width" min="0" max="10" value="4"></label>
-            </section>
+                <input type="hidden" id="text-color" value="#ffffff">
+                <input type="hidden" id="stroke-color" value="#000000">
+                <input type="hidden" id="stroke-width" value="6"> </section>
 
             <section>
-                <h3>ライブカメラ登録（最大10件 / 埋め込みタグをコピペ）</h3>
+                <h3>ライブカメラ登録（<iframe>タグをコピペ）</h3>
                 <div id="camera-inputs">
                     </div>
             </section>
