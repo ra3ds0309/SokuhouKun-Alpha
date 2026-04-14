@@ -2,7 +2,7 @@
 @font-face { font-family: 'UD Shin Go'; src: url('assets/fonts/A-OTF-UDShinGoPr6-Medium.otf'); }
 @font-face { font-family: 'New Rodin'; src: url('assets/fonts/FOT-NewRodinPro-DB.otf'); }
 @font-face { font-family: 'Rodin NTLG'; src: url('assets/fonts/FOT-RodinNTLGPro-DB.otf'); }
-@font-face { font-family: 'UD Kakugo'; src: url('assets/fonts/FOT-UDKakugo_LargePr6-M.otf'); }
+@font-face { font-family: 'UD Kakugo'; src: url('assets/fonts/FOT-UDKakugo_LargePr6-DB.otf'); }
 
 /* --- 2. 全体設定 --- */
 body, html {
@@ -47,7 +47,7 @@ body, html {
 /* --- 4. 場所（右上）・URL（右下） --- */
 #location-box {
     position: absolute; top: 30px; right: 30px;
-    background: rgba(0, 0, 0, 0.8); /* 80%のボックス */
+    background: rgba(0, 0, 0, 0.8);
     padding: 8px 20px;
     border-radius: 2px;
     border-left: 6px solid #d32f2f;
@@ -72,7 +72,10 @@ body, html {
 }
 .modal-content {
     background: #1a1a1a; padding: 30px; border-radius: 12px;
-    width: 80%; max-width: 650px; max-height: 85vh; overflow-y: auto;
+    width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto;
     border: 1px solid #333;
 }
+.cam-input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+input[type="text"] { background: #333; color: white; border: 1px solid #555; padding: 5px; }
+.hint { font-size: 12px; color: #aaa; margin-top: 15px; }
 .hidden { opacity: 0; }
