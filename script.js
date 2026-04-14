@@ -1,12 +1,16 @@
+// --- 初期設定 ---
 let settings = {
     font: "'UD Shin Go', sans-serif",
-    cameras: [{ url: "https://www.youtube.com/embed/dfVK7ld38Ys", location: "サンプル映像" }]
+    cameras: [
+        { url: "https://www.youtube.com/embed/dfVK7ld38Ys", location: "サンプル映像" }
+    ]
 };
 
 let currentPlayer;
 let currentCameraIndex = 0;
 let keysPressed = {};
 
+// --- 1. 初期化 ---
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     createCameraInputs();
@@ -14,24 +18,20 @@ document.addEventListener('DOMContentLoaded', () => {
     updateClock();
     setInterval(updateClock, 1000);
     
-    // 設定を開く判定（確実に動くよう再構築）
+    // 設定を開く判定（「s」キーのみ）
     window.addEventListener('keydown', (e) => {
-        // 設定画面がすでに開いている時は何もしない
-        if (!document.getElementById('settings-modal').classList.contains('modal-hidden')) return;
+        // 入力中の場合は反応させない
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
         
-        const key = e.key.toLowerCase();
-        keysPressed[key] = true;
-
-        if (keysPressed['s'] && keysPressed['t']) {
-            document.getElementById('settings-modal').classList.remove('modal-hidden');
-            keysPressed = {}; // 判定をリセット
+        const modal = document.getElementById('settings-modal');
+        if (!modal.classList.contains('modal-hidden')) return;
+        
+        if (e.key.toLowerCase() === 's') {
+            modal.classList.remove('modal-hidden');
         }
     });
 
-    window.addEventListener('keyup', (e) => {
-        keysPressed[e.key.toLowerCase()] = false;
-    });
-
+    // テスト送信ボタン
     document.getElementById('btn-test').addEventListener('click', () => {
         const text = document.getElementById('test-text').value;
         if(text) showNews(text);
@@ -41,12 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(fetchNHK, 300000);
 });
 
+// --- 2. 時計機能 ---
 function updateClock() {
     const now = new Date();
-    document.getElementById('clock-display').innerText = 
-        `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('clock-display').innerText = `${hours}:${minutes}`;
 }
 
+// --- 3. YouTube Iframe API ---
 function onYouTubeIframeAPIReady() {
     const firstCam = settings.cameras[0] || {url: ""};
     const videoId = extractVideoId(firstCam.url);
@@ -54,22 +57,30 @@ function onYouTubeIframeAPIReady() {
     currentPlayer = new YT.Player('player', {
         videoId: videoId || 'dfVK7ld38Ys',
         playerVars: {
-            'autoplay': 1, 'mute': 1, 'controls': 0,
-            'rel': 0, 'modestbranding': 1, 'iv_load_policy': 3,
+            'autoplay': 1,
+            'mute': 1, // 自動再生には必須
+            'controls': 0,
+            'rel': 0,
+            'modestbranding': 1,
+            'iv_load_policy': 3,
             'origin': window.location.origin
         },
         events: {
-            'onReady': (event) => {
-                event.target.mute();
-                event.target.playVideo();
-                updateCameraDisplay();
-                setInterval(switchNextCamera, 180000);
-            },
+            'onReady': onPlayerReady,
             'onStateChange': (event) => {
-                if (event.data === YT.PlayerState.UNSTARTED) event.target.playVideo();
+                if (event.data === YT.PlayerState.UNSTARTED) {
+                    event.target.playVideo();
+                }
             }
         }
     });
+}
+
+function onPlayerReady(event) {
+    event.target.mute();
+    event.target.playVideo();
+    updateCameraDisplay();
+    setInterval(switchNextCamera, 180000); // 3分おき
 }
 
 function switchNextCamera() {
@@ -83,10 +94,7 @@ function switchNextCamera() {
     }
 }
 
-async function fetchNHK() {
-    // NHK取得ロジック（実際にはCORS制限のためテストボタンを推奨）
-}
-
+// --- 4. 速報表示 ---
 function showNews(text) {
     const container = document.getElementById('ticker-container');
     const content = document.getElementById('ticker-content');
@@ -96,16 +104,24 @@ function showNews(text) {
     window.sokuhoTimeout = setTimeout(() => { container.classList.add('hidden'); }, 30000);
 }
 
+async function fetchNHK() {
+    // NHK取得ロジック（実際にはテスト送信メインを推奨）
+}
+
+// --- 5. 設定管理 ---
 function createCameraInputs() {
     const container = document.getElementById('camera-inputs');
     container.innerHTML = "";
     for (let i = 0; i < 10; i++) {
         const div = document.createElement('div');
         div.className = "cam-input-row";
+        div.style.marginBottom = "8px";
+        div.style.display = "flex";
+        div.style.gap = "10px";
         const cam = settings.cameras[i] || { url: "", location: "" };
         div.innerHTML = `
-            <input type="text" placeholder="場所名" class="cam-loc" value="${cam.location}" style="width: 120px; background: #333; color: white; border: 1px solid #555;">
-            <input type="text" placeholder='<iframe>タグをコピペ' class="cam-url" value='${cam.url}' style="flex-grow: 1; background: #333; color: white; border: 1px solid #555;">
+            <input type="text" placeholder="場所名" class="cam-loc" value="${cam.location}" style="width: 120px;">
+            <input type="text" placeholder='<iframe>タグを貼り付け' class="cam-url" value='${cam.url}' style="flex-grow: 1;">
         `;
         container.appendChild(div);
     }
@@ -140,8 +156,7 @@ function loadSettings() {
 
 function updateStyles() {
     document.getElementById('info-box').style.fontFamily = settings.font;
-    const ticker = document.getElementById('ticker-content');
-    ticker.style.fontFamily = settings.font;
+    document.getElementById('ticker-content').style.fontFamily = settings.font;
 }
 
 function updateCameraDisplay() {
@@ -155,5 +170,6 @@ function updateCameraDisplay() {
 function extractVideoId(url) {
     if (!url) return null;
     const parts = url.split('/');
-    return parts[parts.length - 1].split('?')[0];
+    const lastPart = parts[parts.length - 1];
+    return lastPart.split('?')[0];
 }
