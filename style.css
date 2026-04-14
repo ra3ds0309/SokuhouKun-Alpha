@@ -25,10 +25,10 @@ body, html {
     overflow: hidden;
     background-color: #000;
     color: white;
-    font-family: 'UD Shin Go', sans-serif; /* デフォルト */
+    font-family: 'UD Shin Go', sans-serif;
+    font-feature-settings: "palt"; /* プロポーショナルメトリクス有効化 */
 }
 
-/* 背景動画エリア */
 #video-container {
     position: fixed;
     top: 0;
@@ -36,19 +36,19 @@ body, html {
     width: 100%;
     height: 100%;
     z-index: -1;
-    pointer-events: none; /* 動画へのクリックを無効化 */
+    pointer-events: none;
 }
 
 #player {
     width: 100%;
     height: 100%;
-    transform: scale(1.1); /* 黒縁を隠すために少し拡大 */
+    transform: scale(1.1);
 }
 
 /* --- 3. 速報スーパー --- */
 #ticker-container {
     position: absolute;
-    top: 30px; /* 少し浮かせるのがテレビ風 */
+    top: 30px;
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
@@ -58,7 +58,6 @@ body, html {
     transition: opacity 0.5s;
 }
 
-/* 「ニュース速報」ラベル */
 .ticker-label {
     background: linear-gradient(to bottom, #d32f2f, #b71c1c);
     color: white;
@@ -69,24 +68,24 @@ body, html {
     box-shadow: 0 0 0 2px #b71c1c;
     white-space: nowrap;
     z-index: 2;
+    font-feature-settings: "palt";
 }
 
-/* 速報本文の座布団 */
 .ticker-text {
-    background: rgba(0, 0, 50, 0.85); /* 深い紺色 */
+    background: rgba(0, 0, 50, 0.85);
     padding: 10px 30px;
     font-size: 32px;
     width: 100%;
     border: 2px solid white;
-    margin-left: -2px; /* ラベルと重ねる */
+    margin-left: -2px;
     white-space: nowrap;
     overflow: hidden;
-    /* 動的な文字設定はJSから上書き可能にする */
     -webkit-text-stroke: 4px black;
     paint-order: stroke fill;
+    font-feature-settings: "palt";
 }
 
-/* --- 4. ライブカメラ情報（右下） --- */
+/* --- 4. ライブカメラ情報 --- */
 #camera-info {
     position: absolute;
     bottom: 20px;
@@ -103,9 +102,9 @@ body, html {
     font-weight: bold;
 }
 
-/* --- 5. 設定画面（モーダル） --- */
+/* --- 5. 設定画面 --- */
 .modal-hidden {
-    display: none;
+    display: none !important;
 }
 
 #settings-modal {
@@ -130,27 +129,6 @@ body, html {
     max-height: 80vh;
     overflow-y: auto;
     border: 1px solid #444;
-}
-
-h2, h3 { border-bottom: 1px solid #444; padding-bottom: 5px; }
-
-section { margin-bottom: 20px; }
-
-input, select {
-    margin: 5px 0;
-    padding: 5px;
-    background: #333;
-    color: white;
-    border: 1px solid #555;
-}
-
-button {
-    background: #0078d4;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
 }
 
 .hidden {
