@@ -4,113 +4,68 @@
 @font-face { font-family: 'Rodin NTLG'; src: url('assets/fonts/FOT-RodinNTLGPro-DB.otf'); }
 @font-face { font-family: 'UD Kakugo'; src: url('assets/fonts/FOT-UDKakugo_LargePr6-DB.otf'); }
 
-/* --- 2. 全体設定 --- */
 body, html {
     margin: 0; padding: 0; width: 100%; height: 100%;
     overflow: hidden; background-color: #000; color: white;
     font-family: 'UD Shin Go', sans-serif;
-    font-feature-settings: "palt";
 }
 
 #video-container {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 1;
+    z-index: 1; pointer-events: none;
 }
 #player { width: 100%; height: 100%; transform: scale(1.1); }
 
 #ui-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 10;
-    pointer-events: none;
+    z-index: 10; pointer-events: none;
 }
 
-/* --- 3. UIデザイン --- */
-
-#header-container {
-    display: flex;
-    align-items: flex-start;
-    padding: 0 30px; /* 上のパディングを0に */
-}
-
-/* 時計・場所ボックス（画面上端につなげる） */
+/* --- 時計ボックス --- */
+#header-container { display: flex; align-items: flex-start; padding: 0 30px; }
 #info-box {
-    background: #262626;
-    padding: 15px 25px 15px 25px;
-    border-radius: 0 0 12px 12px; /* 上側は0px固定 */
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    margin-right: 25px;
+    background: #262626; padding: 15px 25px;
+    border-radius: 0 0 12px 12px; text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-right: 25px;
 }
+#clock-display { font-size: 64px; font-weight: bold; line-height: 1; margin-bottom: 2px; }
+#camera-location { font-size: 18px; color: #aaa; }
 
-#clock-display {
-    font-size: 64px;
-    font-weight: bold;
-    line-height: 1;
-    margin-bottom: 2px;
-}
-
-#camera-location {
-    font-size: 18px;
-    color: #aaa;
-}
-
-/* 速報テキスト */
-#ticker-container {
-    margin-top: 30px;
-    flex-grow: 1;
-    transition: opacity 0.5s;
-}
-
+/* --- 速報テキスト --- */
+#ticker-container { margin-top: 30px; flex-grow: 1; transition: opacity 0.5s; }
 #ticker-content {
-    font-size: 38px;
-    font-weight: bold;
-    color: white;
-    line-height: 1.1;
-    -webkit-text-stroke: 7px black;
-    paint-order: stroke fill;
+    font-size: 38px; font-weight: bold; color: white; line-height: 1.1;
+    -webkit-text-stroke: 7px black; paint-order: stroke fill;
     filter: drop-shadow(0 0 5px rgba(0,0,0,1));
 }
 
-/* 左下設定ボタン */
-#settings-trigger {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
-    pointer-events: auto; /* ここだけクリック可能にする */
+/* --- 左下設定トリガー --- */
+#settings-trigger-zone {
+    position: absolute; bottom: 0; left: 0;
+    width: 150px; height: 100px; /* 反応エリアを広めに確保 */
+    pointer-events: auto; /* クリックを奪えるようにする */
+    display: flex; align-items: flex-end; padding: 15px;
 }
-
 #btn-open-settings {
-    font-size: 24px;
-    color: rgba(255, 255, 255, 0.4);
-    cursor: pointer;
-    transition: color 0.2s;
+    background: rgba(0,0,0,0.6); color: rgba(255,255,255,0.5);
+    padding: 5px 12px; border-radius: 20px; font-size: 14px;
+    cursor: pointer; opacity: 0; transition: 0.3s;
 }
+#settings-trigger-zone:hover #btn-open-settings { opacity: 1; color: white; }
 
-#btn-open-settings:hover {
-    color: rgba(255, 255, 255, 0.9);
-}
+#url-box { position: absolute; bottom: 5px; right: 10px; font-size: 8px; color: rgba(255,255,255,0.3); }
 
-#url-box {
-    position: absolute; bottom: 5px; right: 10px;
-    font-size: 8px;
-    color: rgba(255, 255, 255, 0.3);
-    background: rgba(0, 0, 0, 0.2);
-    padding: 1px 4px;
-}
-
-/* --- 4. 設定画面 --- */
+/* --- 設定モーダル --- */
 .modal-hidden { display: none !important; }
 #settings-modal {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 100;
+    background: rgba(0, 0, 0, 0.9); z-index: 1000;
     display: flex; justify-content: center; align-items: center;
     pointer-events: auto;
 }
 .modal-content {
     background: #1a1a1a; padding: 30px; border-radius: 12px;
-    width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto;
-    border: 1px solid #333;
+    width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; border: 1px solid #333;
 }
 input[type="text"] { background: #333; color: white; border: 1px solid #555; padding: 8px; }
 button { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
