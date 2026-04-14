@@ -3,7 +3,7 @@ let settings = {
     font: "'UD Shin Go', sans-serif",
     textColor: "#ffffff",
     strokeColor: "#000000",
-    strokeWidth: "4",
+    strokeWidth: "6", // 画像に合わせて太く
     cameras: [
         { url: "https://www.youtube.com/embed/dfVK7ld38Ys", location: "サンプル映像" }
     ]
@@ -18,9 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     createCameraInputs();
     updateStyles();
+    updateClock(); // 時計を開始
+    setInterval(updateClock, 1000); // 1秒ごとに更新
     
     // キー入力判定 (s + t)
     document.addEventListener('keydown', (e) => {
+        // 入力欄にフォーカスがある時は判定しない
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
         keysPressed[e.key.toLowerCase()] = true;
         if (keysPressed['s'] && keysPressed['t']) {
             document.getElementById('settings-modal').classList.remove('modal-hidden');
@@ -37,10 +42,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     fetchNHK();
-    setInterval(fetchNHK, 300000);
+    setInterval(fetchNHK, 300000); // 5分おき
 });
 
-// --- 2. YouTube Iframe API ---
+// --- 2. 時計機能 ---
+function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('clock-display').innerText = `${hours}:${minutes}`;
+}
+
+// --- 3. YouTube Iframe API ---
 function onYouTubeIframeAPIReady() {
     const firstCam = settings.cameras[0] || {url: ""};
     const videoId = extractVideoId(firstCam.url);
@@ -48,21 +61,38 @@ function onYouTubeIframeAPIReady() {
     currentPlayer = new YT.Player('player', {
         videoId: videoId || 'dfVK7ld38Ys',
         playerVars: {
-            'autoplay': 1, 'mute': 1, 'controls': 0,
-            'rel': 0, 'modestbranding': 1, 'iv_load_policy': 3
+            'autoplay': 1,
+            'mute': 1, // ★自動再生には必須
+            'controls': 0,
+            'rel': 0,
+            'modestbranding': 1,
+            'iv_load_policy': 3,
+            'origin': window.location.origin // セキュリティ対策
         },
-        events: { 'onReady': onPlayerReady }
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
     });
 }
 
 function onPlayerReady(event) {
+    // ミュート状態で再生を開始（ブラウザの自動再生ポリシー対策）
+    event.target.mute();
     event.target.playVideo();
     updateCameraDisplay();
     setInterval(switchNextCamera, 180000); // 3分おき
 }
 
+function onPlayerStateChange(event) {
+    // 再生が停止したり未開始の場合、再度再生を試みる
+    if (event.data === YT.PlayerState.UNSTARTED || event.data === YT.PlayerState.PAUSED) {
+        event.target.playVideo();
+    }
+}
+
 function switchNextCamera() {
-    if (settings.cameras.length === 0) return;
+    if (settings.cameras.length <= 1) return;
     currentCameraIndex = (currentCameraIndex + 1) % settings.cameras.length;
     const nextCam = settings.cameras[currentCameraIndex];
     const nextId = extractVideoId(nextCam.url);
@@ -72,31 +102,35 @@ function switchNextCamera() {
     }
 }
 
-// --- 3. 速報表示 ---
+// --- 4. 速報表示 ---
 async function fetchNHK() {
     try {
+        // ※実際にはCORS制限で取得できない可能性が高いです
         const response = await fetch('https://api.web.nhk/sokuho/news/sokuho_news.xml');
         const text = await response.text();
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(text, "text/xml");
         const item = xmlDoc.getElementsByTagName("item")[0];
         if (item) {
+            // XML内の改行を <br> に変換するなどが必要な場合があります
             showNews(item.getElementsByTagName("title")[0].textContent);
         }
     } catch (e) {
-        console.log("NHK速報取得エラー");
+        console.log("NHK速報の自動取得はCORSにより制限されています。テスト送信を使用してください。");
     }
 }
 
 function showNews(text) {
     const container = document.getElementById('ticker-container');
     const content = document.getElementById('ticker-content');
-    content.innerText = text;
+    content.innerHTML = text; // <br> を有効にするため innerHTML
     container.classList.remove('hidden');
-    setTimeout(() => { container.classList.add('hidden'); }, 30000);
+    // 30秒後に隠す演出
+    if (window.sokuhoTimeout) clearTimeout(window.sokuhoTimeout);
+    window.sokuhoTimeout = setTimeout(() => { container.classList.add('hidden'); }, 30000);
 }
 
-// --- 4. 設定管理 ---
+// --- 5. 設定管理 ---
 function createCameraInputs() {
     const container = document.getElementById('camera-inputs');
     container.innerHTML = "";
@@ -113,14 +147,11 @@ function createCameraInputs() {
 }
 
 document.getElementById('save-settings').addEventListener('click', () => {
-    // 保存前にキーの状態を強制リセット（リロード後の即再表示を防ぐ）
+    // 保存前にキーの状態を強制リセット
     keysPressed = {};
-    localStorage.removeItem('keysPressed'); 
 
     settings.font = document.getElementById('font-select').value;
-    settings.textColor = document.getElementById('text-color').value;
-    settings.strokeColor = document.getElementById('stroke-color').value;
-    settings.strokeWidth = document.getElementById('stroke-width').value;
+    // 色と太さは固定にするため、取得しない（初期値を使用）
 
     const urls = document.getElementsByClassName('cam-url');
     const locs = document.getElementsByClassName('cam-loc');
@@ -128,7 +159,7 @@ document.getElementById('save-settings').addEventListener('click', () => {
     for (let i = 0; i < urls.length; i++) {
         let rawValue = urls[i].value.trim();
         if (rawValue !== "") {
-            // iframeタグからsrc属性だけを抜き出す
+            // iframeタグからsrc属性だけを抜き出すロジック
             if (rawValue.includes("<iframe")) {
                 const match = rawValue.match(/src=["'](.+?)["']/);
                 if (match) rawValue = match[1];
@@ -148,17 +179,22 @@ function loadSettings() {
     if (saved) {
         settings = JSON.parse(saved);
         document.getElementById('font-select').value = settings.font;
-        document.getElementById('text-color').value = settings.textColor;
-        document.getElementById('stroke-color').value = settings.strokeColor;
-        document.getElementById('stroke-width').value = settings.strokeWidth;
+        // hidden input の値も更新（テスト送信機能のため）
+        document.getElementById('text-color').value = settings.textColor || "#ffffff";
+        document.getElementById('stroke-color').value = settings.strokeColor || "#000000";
+        document.getElementById('stroke-width').value = settings.strokeWidth || "6";
     }
 }
 
 function updateStyles() {
+    // 時計ボックスのフォントも設定に合わせる
+    document.getElementById('info-box').style.fontFamily = settings.font;
+
+    // 速報テキストのスタイル（画像固定：白文字・極太黒縁）
     const ticker = document.getElementById('ticker-content');
     ticker.style.fontFamily = settings.font;
-    ticker.style.color = settings.textColor;
-    ticker.style.webkitTextStroke = `${settings.strokeWidth}px ${settings.strokeColor}`;
+    ticker.style.color = "#ffffff";
+    ticker.style.webkitTextStroke = `6px #000000`; // 6pxで固定
 }
 
 function updateCameraDisplay() {
@@ -174,5 +210,6 @@ function extractVideoId(url) {
     if (!url) return null;
     const parts = url.split('/');
     const lastPart = parts[parts.length - 1];
+    // クエリパラメータがある場合を除去
     return lastPart.split('?')[0];
 }
