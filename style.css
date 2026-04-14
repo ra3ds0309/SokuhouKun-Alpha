@@ -21,23 +21,22 @@ body, html {
 #ui-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 10;
-    pointer-events: none;
+    pointer-events: none; /* 下の動画をクリックできるようにする */
 }
 
-/* --- 3. UIデザイン（修正：時計ボックス） --- */
+/* --- 3. UIデザイン --- */
 
 #header-container {
     display: flex;
     align-items: flex-start;
-    padding: 0 30px; /* 上はボックス自体が0pxなので詰め気味に */
+    padding: 15px 30px 0 30px; /* 上側に余白15pxを追加 */
 }
 
-/* 左側：時計・場所ボックス */
+/* 時計・場所ボックス */
 #info-box {
     background: #262626;
     padding: 10px 25px 15px 25px;
-    /* 上側0px、下側12pxの角丸 */
-    border-radius: 0 0 12px 12px;
+    border-radius: 0 0 12px 12px; /* 上側0px、下側12px */
     text-align: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     margin-right: 25px;
@@ -53,12 +52,11 @@ body, html {
 #camera-location {
     font-size: 18px;
     color: #aaa;
-    font-weight: normal;
 }
 
-/* 右側：速報テキスト（縁取り強調） */
+/* 速報テキスト */
 #ticker-container {
-    margin-top: 30px; /* 時計の高さに合わせる */
+    margin-top: 35px; /* 時計の高さに合わせる */
     flex-grow: 1;
     transition: opacity 0.5s;
 }
@@ -68,7 +66,7 @@ body, html {
     font-weight: bold;
     color: white;
     line-height: 1.1;
-    -webkit-text-stroke: 7px black; /* 画像に合わせ少し太めに */
+    -webkit-text-stroke: 7px black; /* 画像通りの太い黒縁 */
     paint-order: stroke fill;
     filter: drop-shadow(0 0 5px rgba(0,0,0,1));
 }
@@ -97,4 +95,14 @@ body, html {
     width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto;
     border: 1px solid #333;
 }
+
+input[type="text"] {
+    background: #333; color: white; border: 1px solid #555; padding: 8px;
+}
+
+button {
+    background: #d32f2f; color: white; border: none; padding: 10px 20px;
+    border-radius: 4px; cursor: pointer;
+}
+
 .hidden { opacity: 0; }
