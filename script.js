@@ -1,4 +1,3 @@
-// --- 初期設定 ---
 let settings = {
     font: "'UD Shin Go', sans-serif",
     cameras: [{ url: "https://www.youtube.com/embed/dfVK7ld38Ys", location: "サンプル映像" }]
@@ -7,7 +6,6 @@ let settings = {
 let currentPlayer;
 let currentCameraIndex = 0;
 
-// --- 1. 初期化 ---
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     createCameraInputs();
@@ -17,16 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const modal = document.getElementById('settings-modal');
 
-    // 設定を開く（「s」キー判定）
+    // 「s」キー判定
     window.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-        if (!modal.classList.contains('modal-hidden')) return;
         if (e.key.toLowerCase() === 's') modal.classList.remove('modal-hidden');
     });
 
-    // 設定を開く（アイコンクリック判定）
+    // 設定ボタンクリック
     document.getElementById('btn-open-settings').addEventListener('click', () => {
         modal.classList.remove('modal-hidden');
+    });
+
+    // 閉じるボタン
+    document.getElementById('btn-close-modal').addEventListener('click', () => {
+        modal.classList.add('modal-hidden');
     });
 
     // テスト送信
@@ -34,20 +36,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = document.getElementById('test-text').value;
         if(text) showNews(text);
     });
-
-    fetchNHK();
-    setInterval(fetchNHK, 300000);
 });
 
-// --- 2. 時計機能 ---
 function updateClock() {
     const now = new Date();
     document.getElementById('clock-display').innerText = 
         `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 }
 
-// --- 3. YouTube Iframe API ---
-function onYouTubeIframeAPIReady() {
+// --- YouTube API 制御 ---
+window.onYouTubeIframeAPIReady = function() {
+    initPlayer();
+};
+
+function initPlayer() {
     const firstCam = settings.cameras[0] || {url: ""};
     const videoId = extractVideoId(firstCam.url);
     
@@ -56,11 +58,10 @@ function onYouTubeIframeAPIReady() {
         playerVars: {
             'autoplay': 1, 'mute': 1, 'controls': 0,
             'rel': 0, 'modestbranding': 1, 'iv_load_policy': 3,
-            'origin': window.location.origin
+            'origin': location.origin
         },
         events: {
             'onReady': (event) => {
-                event.target.mute();
                 event.target.playVideo();
                 updateCameraDisplay();
                 setInterval(switchNextCamera, 180000);
@@ -77,13 +78,12 @@ function switchNextCamera() {
     currentCameraIndex = (currentCameraIndex + 1) % settings.cameras.length;
     const nextCam = settings.cameras[currentCameraIndex];
     const nextId = extractVideoId(nextCam.url);
-    if (nextId) {
+    if (nextId && currentPlayer && currentPlayer.loadVideoById) {
         currentPlayer.loadVideoById(nextId);
         updateCameraDisplay();
     }
 }
 
-// --- 4. 速報表示 ---
 function showNews(text) {
     const container = document.getElementById('ticker-container');
     const content = document.getElementById('ticker-content');
@@ -93,9 +93,6 @@ function showNews(text) {
     window.sokuhoTimeout = setTimeout(() => { container.classList.add('hidden'); }, 30000);
 }
 
-async function fetchNHK() { }
-
-// --- 5. 設定管理 ---
 function createCameraInputs() {
     const container = document.getElementById('camera-inputs');
     container.innerHTML = "";
@@ -107,7 +104,7 @@ function createCameraInputs() {
         const cam = settings.cameras[i] || { url: "", location: "" };
         div.innerHTML = `
             <input type="text" placeholder="場所名" class="cam-loc" value="${cam.location}" style="width: 120px;">
-            <input type="text" placeholder='<iframe>タグを貼り付け' class="cam-url" value='${cam.url}' style="flex-grow: 1;">
+            <input type="text" placeholder='<iframe>タグ' class="cam-url" value='${cam.url}' style="flex-grow: 1;">
         `;
         container.appendChild(div);
     }
@@ -156,5 +153,6 @@ function updateCameraDisplay() {
 function extractVideoId(url) {
     if (!url) return null;
     const parts = url.split('/');
-    return parts[parts.length - 1].split('?')[0];
+    const last = parts[parts.length - 1];
+    return last.split('?')[0];
 }
