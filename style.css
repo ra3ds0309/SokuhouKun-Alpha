@@ -47,21 +47,20 @@ body, html {
 /* --- 4. 場所（右上）・URL（右下） --- */
 #location-box {
     position: absolute; top: 30px; right: 30px;
-    background: rgba(0, 0, 0, 0.6); padding: 5px 15px;
-    border-radius: 5px; display: flex; align-items: center;
-    border-left: 4px solid #d32f2f;
+    background: rgba(0, 0, 0, 0.8); /* 80%のボックス */
+    padding: 8px 20px;
+    border-radius: 2px;
+    border-left: 6px solid #d32f2f;
     z-index: 5;
 }
 
-#location-box .material-icons { margin-right: 8px; font-size: 20px; color: #ff5252; }
-#camera-location { font-size: 24px; font-weight: bold; }
+#camera-location { font-size: 26px; font-weight: bold; }
 
 #url-box {
     position: absolute; bottom: 5px; right: 10px;
     font-size: 8px; color: rgba(255, 255, 255, 0.4);
     background: rgba(0, 0, 0, 0.2); padding: 1px 4px;
     z-index: 5;
-    font-feature-settings: normal; /* URLは詰めない */
 }
 
 /* --- 5. 設定画面 --- */
@@ -74,6 +73,6 @@ body, html {
 .modal-content {
     background: #1a1a1a; padding: 30px; border-radius: 12px;
     width: 80%; max-width: 650px; max-height: 85vh; overflow-y: auto;
-    border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid #333;
 }
 .hidden { opacity: 0; }
