@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>速報くんα</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="video-container">
+        <div id="player"></div>
+    </div>
+
+    <div id="ticker-container" class="hidden">
+        <div class="ticker-label">ニュース速報</div>
+        <div class="ticker-text" id="ticker-content">
+            ここに速報の内容が表示されます。
+        </div>
+    </div>
+
+    <div id="camera-info">
+        <span id="camera-location">場所の名前</span>
+        <br>
+        <span id="camera-url-display">https://www.youtube.com/watch?v=...</span>
+    </div>
+
+    <div id="settings-modal" class="modal-hidden">
+        <div class="modal-content">
+            <h2>速報くんα 設定</h2>
+            
+            <section>
+                <h3>フォント設定</h3>
+                <label>フォント種類:
+                    <select id="font-select">
+                        <option value="'UD Shin Go', sans-serif">UD新ゴ</option>
+                        <option value="'UD Kakugo', sans-serif">UD角ゴ</option>
+                        <option value="'New Rodin', sans-serif">ニューロダン</option>
+                        <option value="'Rodin NTLG', sans-serif">ロダンNTLG</option>
+                    </select>
+                </label>
+                <br>
+                <label>文字色: <input type="color" id="text-color" value="#ffffff"></label>
+                <br>
+                <label>枠線色: <input type="color" id="stroke-color" value="#000000"></label>
+                <br>
+                <label>枠線の太さ: <input type="range" id="stroke-width" min="0" max="10" value="4"></label>
+            </section>
+
+            <section>
+                <h3>ライブカメラ登録（最大10件）</h3>
+                <div id="camera-inputs">
+                    </div>
+            </section>
+
+            <button id="save-settings">保存して閉じる</button>
+            <p class="hint">※「s + t」キーでこの画面に戻ります</p>
+        </div>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="script.js"></script>
+</body>
+</html>
