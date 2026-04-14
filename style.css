@@ -21,7 +21,7 @@ body, html {
 #ui-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 10;
-    pointer-events: none; /* 下の動画をクリックできるようにする */
+    pointer-events: none;
 }
 
 /* --- 3. UIデザイン --- */
@@ -29,14 +29,14 @@ body, html {
 #header-container {
     display: flex;
     align-items: flex-start;
-    padding: 15px 30px 0 30px; /* 上側に余白15pxを追加 */
+    padding: 0 30px; /* 上のパディングを0に */
 }
 
-/* 時計・場所ボックス */
+/* 時計・場所ボックス（画面上端につなげる） */
 #info-box {
     background: #262626;
-    padding: 10px 25px 15px 25px;
-    border-radius: 0 0 12px 12px; /* 上側0px、下側12px */
+    padding: 15px 25px 15px 25px;
+    border-radius: 0 0 12px 12px; /* 上側は0px固定 */
     text-align: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     margin-right: 25px;
@@ -56,7 +56,7 @@ body, html {
 
 /* 速報テキスト */
 #ticker-container {
-    margin-top: 35px; /* 時計の高さに合わせる */
+    margin-top: 30px;
     flex-grow: 1;
     transition: opacity 0.5s;
 }
@@ -66,9 +66,28 @@ body, html {
     font-weight: bold;
     color: white;
     line-height: 1.1;
-    -webkit-text-stroke: 7px black; /* 画像通りの太い黒縁 */
+    -webkit-text-stroke: 7px black;
     paint-order: stroke fill;
     filter: drop-shadow(0 0 5px rgba(0,0,0,1));
+}
+
+/* 左下設定ボタン */
+#settings-trigger {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    pointer-events: auto; /* ここだけクリック可能にする */
+}
+
+#btn-open-settings {
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+#btn-open-settings:hover {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 #url-box {
@@ -81,7 +100,6 @@ body, html {
 
 /* --- 4. 設定画面 --- */
 .modal-hidden { display: none !important; }
-
 #settings-modal {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.85);
@@ -89,20 +107,11 @@ body, html {
     display: flex; justify-content: center; align-items: center;
     pointer-events: auto;
 }
-
 .modal-content {
     background: #1a1a1a; padding: 30px; border-radius: 12px;
     width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto;
     border: 1px solid #333;
 }
-
-input[type="text"] {
-    background: #333; color: white; border: 1px solid #555; padding: 8px;
-}
-
-button {
-    background: #d32f2f; color: white; border: none; padding: 10px 20px;
-    border-radius: 4px; cursor: pointer;
-}
-
+input[type="text"] { background: #333; color: white; border: 1px solid #555; padding: 8px; }
+button { background: #d32f2f; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
 .hidden { opacity: 0; }
