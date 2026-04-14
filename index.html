@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>速報くんα</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,10 +20,13 @@
         </div>
     </div>
 
-    <div id="camera-info">
+    <div id="location-box">
+        <span class="material-icons">place</span>
         <span id="camera-location">場所の名前</span>
-        <br>
-        <span id="camera-url-display">https://www.youtube.com/watch?v=...</span>
+    </div>
+
+    <div id="url-box">
+        <span id="camera-url-display">URL</span>
     </div>
 
     <div id="settings-modal" class="modal-hidden">
@@ -30,8 +34,8 @@
             <h2>速報くんα 設定</h2>
             
             <section>
-                <h3>フォント設定</h3>
-                <label>フォント種類:
+                <h3>フォント・色設定</h3>
+                <label>フォント:
                     <select id="font-select">
                         <option value="'UD Shin Go', sans-serif">UD新ゴ</option>
                         <option value="'UD Kakugo', sans-serif">UD角ゴ</option>
@@ -44,17 +48,17 @@
                 <br>
                 <label>枠線色: <input type="color" id="stroke-color" value="#000000"></label>
                 <br>
-                <label>枠線の太さ: <input type="range" id="stroke-width" min="0" max="10" value="4"></label>
+                <label>枠線太さ: <input type="range" id="stroke-width" min="0" max="10" value="4"></label>
             </section>
 
             <section>
-                <h3>ライブカメラ登録（最大10件）</h3>
+                <h3>ライブカメラ（最大10件）</h3>
                 <div id="camera-inputs">
                     </div>
             </section>
 
             <button id="save-settings">保存して閉じる</button>
-            <p class="hint">※「s + t」キーでこの画面に戻ります</p>
+            <p class="hint">s + t キーで設定を開く / コンソールで testNews("文字") でテスト送信</p>
         </div>
     </div>
 
