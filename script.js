@@ -5,7 +5,7 @@ let settings = {
     strokeColor: "#000000",
     strokeWidth: "4",
     cameras: [
-        { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", location: "東京 渋谷" }
+        { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", location: "サンプル" }
     ]
 };
 
@@ -30,7 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
         keysPressed[e.key.toLowerCase()] = false;
     });
 
-    // NHK速報取得
+    // テスト送信ボタン
+    document.getElementById('btn-test').addEventListener('click', () => {
+        const text = document.getElementById('test-text').value;
+        if(text) showNews(text);
+    });
+
     fetchNHK();
     setInterval(fetchNHK, 300000);
 });
@@ -38,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- 2. YouTube Iframe API ---
 function onYouTubeIframeAPIReady() {
     const firstCam = settings.cameras[0] || {url: ""};
-    const videoId = extractVideoId(firstCam.url) || 'dQw4w9WgXcQ';
+    const videoId = extractVideoIdFromEmbed(firstCam.url) || 'dQw4w9WgXcQ';
     
     currentPlayer = new YT.Player('player', {
         videoId: videoId,
@@ -60,14 +65,14 @@ function switchNextCamera() {
     if (settings.cameras.length === 0) return;
     currentCameraIndex = (currentCameraIndex + 1) % settings.cameras.length;
     const nextCam = settings.cameras[currentCameraIndex];
-    const nextId = extractVideoId(nextCam.url);
+    const nextId = extractVideoIdFromEmbed(nextCam.url);
     if (nextId) {
         currentPlayer.loadVideoById(nextId);
         updateCameraDisplay();
     }
 }
 
-// --- 3. 速報取得・テスト機能 ---
+// --- 3. 速報表示ロジック ---
 async function fetchNHK() {
     try {
         const response = await fetch('https://api.web.nhk/sokuho/news/sokuho_news.xml');
@@ -76,20 +81,19 @@ async function fetchNHK() {
         const xmlDoc = parser.parseFromString(text, "text/xml");
         const item = xmlDoc.getElementsByTagName("item")[0];
         if (item) {
-            testNews(item.getElementsByTagName("title")[0].textContent);
+            showNews(item.getElementsByTagName("title")[0].textContent);
         }
     } catch (e) {
-        console.log("CORSによりNHK速報の自動取得が制限されています。テストは testNews() を使用してください。");
+        console.log("NHK速報の自動取得制限中");
     }
 }
 
-// 手動テスト配信機能
-function testNews(text) {
+function showNews(text) {
     const container = document.getElementById('ticker-container');
     const content = document.getElementById('ticker-content');
     content.innerText = text;
     container.classList.remove('hidden');
-    // 30秒後に自動で隠す演出（テレビ風）
+    // 30秒後に隠す
     setTimeout(() => { container.classList.add('hidden'); }, 30000);
 }
 
@@ -103,14 +107,14 @@ function createCameraInputs() {
         div.style.marginBottom = "8px";
         div.innerHTML = `
             <input type="text" placeholder="場所" class="cam-loc" value="${cam.location}" style="width: 80px;">
-            <input type="text" placeholder="YouTube URL" class="cam-url" value="${cam.url}" style="width: 250px;">
+            <input type="text" placeholder="埋め込みURLを入力" class="cam-url" value="${cam.url}" style="width: 250px;">
         `;
         container.appendChild(div);
     }
 }
 
 document.getElementById('save-settings').addEventListener('click', () => {
-    keysPressed = {}; // リセット
+    keysPressed = {}; 
     settings.font = document.getElementById('font-select').value;
     settings.textColor = document.getElementById('text-color').value;
     settings.strokeColor = document.getElementById('stroke-color').value;
@@ -155,9 +159,11 @@ function updateCameraDisplay() {
     }
 }
 
-function extractVideoId(url) {
+// 埋め込み用URL (https://www.youtube.com/embed/VIDEO_ID) からIDを抽出
+function extractVideoIdFromEmbed(url) {
     if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
+    const parts = url.split('/');
+    const lastPart = parts[parts.length - 1];
+    // クエリパラメータ (?enablejsapi=1 等) がある場合を除去
+    return lastPart.split('?')[0];
 }
