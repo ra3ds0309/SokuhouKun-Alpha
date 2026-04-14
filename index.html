@@ -2,15 +2,11 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>速報くんα</title>
+    <title>速報くんα - メイン</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div id="video-container">
-        <div id="player"></div>
-    </div>
+    <div id="video-container"><div id="player"></div></div>
 
     <div id="ui-overlay">
         <div id="header-container">
@@ -18,63 +14,16 @@
                 <div id="clock-display">00:00</div>
                 <div id="camera-location">カメラ場所</div>
             </div>
-
             <div id="ticker-container" class="hidden">
-                <div id="ticker-content">
-                    ここに速報が表示されます
-                </div>
+                <div id="ticker-content">速報内容</div>
             </div>
         </div>
-
-        <div id="url-box">
-            <span id="camera-url-display">URL</span>
-        </div>
+        <div id="url-box"><span id="camera-url-display">URL</span></div>
     </div>
+
+    <a href="settings.html" id="fixed-settings-trigger" title="設定を開く">⚙</a>
 
     <div id="error-container"></div>
-
-    <div id="fixed-settings-trigger" title="設定を開く">
-        ⚙
-    </div>
-
-    <div id="settings-modal" class="modal-hidden">
-        <div class="modal-content">
-            <h2>速報くんα 設定</h2>
-            <p style="font-size: 12px; color: #ff5252; margin-bottom: 20px;">※保存ボタンを押すと再読み込みされます</p>
-            
-            <section>
-                <h3>テスト送信</h3>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="test-text" placeholder="テスト文字（2行は <br> を使用）" style="flex-grow: 1;">
-                    <button id="btn-test">送信</button>
-                </div>
-            </section>
-
-            <section>
-                <h3>フォント設定</h3>
-                <label>フォント:
-                    <select id="font-select">
-                        <option value="'UD Shin Go', sans-serif">UD新ゴ</option>
-                        <option value="'UD Kakugo', sans-serif">UD角ゴ</option>
-                        <option value="'New Rodin', sans-serif">ニューロダン</option>
-                        <option value="'Rodin NTLG', sans-serif">ロダンNTLG</option>
-                    </select>
-                </label>
-            </section>
-
-            <section>
-                <h3>ライブカメラ登録（<iframe>タグをコピペ）</h3>
-                <div id="camera-inputs">
-                    </div>
-            </section>
-
-            <div class="modal-footer">
-                <button id="save-settings">保存して更新</button>
-                <button id="btn-close-modal" style="background:#444; margin-left:10px;">閉じる</button>
-            </div>
-            <p style="font-size: 11px; color: #777; margin-top: 15px;">「s」キーでも設定を開けます</p>
-        </div>
-    </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="script.js"></script>
