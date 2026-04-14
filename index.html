@@ -34,6 +34,14 @@
             <h2>速報くんα 設定</h2>
             
             <section>
+                <h3>テスト送信</h3>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="test-text" placeholder="テストする文字を入力" style="flex-grow: 1;">
+                    <button id="btn-test">送信</button>
+                </div>
+            </section>
+
+            <section>
                 <h3>フォント・色設定</h3>
                 <label>フォント:
                     <select id="font-select">
@@ -52,13 +60,13 @@
             </section>
 
             <section>
-                <h3>ライブカメラ（最大10件）</h3>
+                <h3>ライブカメラ（最大10件 / 埋め込みURLを入力）</h3>
                 <div id="camera-inputs">
                     </div>
             </section>
 
             <button id="save-settings">保存して閉じる</button>
-            <p class="hint">s + t キーで設定を開く / コンソールで testNews("文字") でテスト送信</p>
+            <p class="hint">s + t キーで設定画面を開きます</p>
         </div>
     </div>
 
