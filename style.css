@@ -289,3 +289,20 @@ body, html {
     flex-wrap: wrap;
     gap: 20px;
 }
+
+/* 地震・ニュース共通：エフェクトなしで消すための設定 */
+.no-effect-hide {
+    display: none !important;
+    transition: none !important;
+    opacity: 0 !important;
+}
+
+/* 地震速報の隠し状態を強化 */
+.eq-hidden {
+    display: none !important;
+}
+
+/* ニュース速報のコンテナも transition を消すか、JSで直接 display: none する */
+#ticker-container {
+    /* transition: opacity 0.5s;  ← この行を削除するか、非表示時に transition を切る */
+}
