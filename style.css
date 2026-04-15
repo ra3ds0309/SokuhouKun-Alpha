@@ -16,37 +16,36 @@ body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
     background: #262626; padding: 20px 25px 15px 25px;
     border-radius: 0 0 12px 12px; text-align: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
-    /* 右の余白をさらに増やしてテロップを右へ寄せる */
     margin-right: 60px; 
 }
 
 #clock-display { 
     font-size: 64px; font-weight: bold; line-height: 1; 
     display: flex; align-items: center; justify-content: center; 
-    font-feature-settings: "palt" 0; /* 時計は文字詰めをオフにして等間隔に */
-    letter-spacing: 0.1em; /* 文字間隔を少し空ける */
+    font-feature-settings: "palt"; 
+    letter-spacing: normal; /* 文字間隔をデフォルトに */
 }
 
-/* 半角コロンの微調整 */
+/* 全角コロンの微調整 */
 .colon { 
-    transform: translateY(-2px); 
-    margin: 0 2px;
-    letter-spacing: 0; /* コロン自体の間隔は詰める */
+    transform: translateY(-4px); 
+    margin: 0 -4px;
 }
 
-#camera-location { font-size: 18px; color: #aaa; letter-spacing: 0.05em; }
+#camera-location { font-size: 18px; color: #aaa; }
 
-/* 速報テロップ（丸縁取り・行間） */
+/* 速報テロップ（サイズ拡大・行間・丸縁取り） */
 #ticker-container { margin-top: 35px; flex-grow: 1; transition: opacity 0.5s; }
 #ticker-content {
-    font-size: 38px; font-weight: bold; 
-    line-height: 1.5; /* 行間を広めに設定（1.1 → 1.5） */
+    font-size: 48px; /* 38pxから48pxに拡大 */
+    font-weight: bold; 
+    line-height: 1.4;
     font-feature-settings: "palt";
     
-    /* 強力な丸縁取り設定 */
+    /* 丸縁取り設定 */
     paint-order: stroke fill;
-    -webkit-text-stroke-linecap: round;
-    -webkit-text-stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 #url-box { position: absolute; bottom: 5px; right: 10px; font-size: 8px; color: rgba(255, 255, 255, 0.3); }
