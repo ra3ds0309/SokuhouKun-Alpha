@@ -206,71 +206,47 @@ body, html {
     position: fixed;
     right: 0;
     top: 0;
-    height: 100vh; /* 画面の高さ100% */
-    width: auto;
-    background: white; /* 背景は白 */
+    height: 100vh;
+    background: white;
     display: flex;
-    flex-direction: row-reverse; /* 右から順に配置 */
-    padding: 0 40px; /* 左右の余白 */
+    flex-direction: row-reverse;
+    padding: 0 30px;
     z-index: 9999;
+    /* ロダンNTLGを優先的に指定。なければUD角ゴシック系を使用 */
+    font-family: "RodinNTLG Pro EB", "FOT-RodinNTLG Pro EB", "Noto Sans JP", sans-serif;
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.1); /* 少し影を入れて浮かせる */
 }
 
-/* 隠れている状態 */
-.side-hidden {
-    transform: translateX(100%); /* 完全に画面外へ */
-    opacity: 0;
-}
-
-/* 表示されている状態 */
-.side-visible {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-/* 一番右端の「この時間の主なニュース」見出し */
+/* 見出し：青背景に白文字の縦書き */
 .side-header {
     writing-mode: vertical-rl;
     text-orientation: upright;
-    background: #001e5a; /* 濃い紺色 */
+    background: #002060; /* 濃い紺色 */
     color: white;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 900;
-    padding: 20px 10px;
+    padding: 40px 10px;
     height: fit-content;
-    margin: 0 0 0 20px; /* 右側に配置 */
-    letter-spacing: 0.2em;
-    display: flex;
-    align-items: center;
+    margin: 40px 0 0 20px;
+    letter-spacing: 0.1em;
 }
 
-/* ニュースを並べるエリア */
+/* ニュースリスト：改行させず、1つずつ独立させる */
 #side-news-list {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row-reverse; /* 右から左へニュースを並べる */
     writing-mode: vertical-rl;
     text-orientation: upright;
-    margin: auto 0; /* 上下中央に配置 */
-    height: 80%; /* 画面中央付近に収める */
+    margin: auto 0;
+    height: 90%;
 }
 
-/* 各ニュース項目 */
 .news-item {
-    font-size: 32px; /* 大きめのフォント */
+    font-size: 38px; /* ロダンっぽさを出すために大きく太く */
     font-weight: 900;
-    color: #000;
-    margin-left: 40px; /* 項目同士の間隔 */
-    line-height: 1.1;
-    letter-spacing: -0.05em; /* 文字間を少し詰めると「放送テロップ」っぽくなります */
-    white-space: nowrap;
-    display: flex;
-    align-items: flex-start;
-}
-
-/* ▼ の記号を少し小さく、上に寄せる調整 */
-.news-item::before {
-    content: "▼";
-    font-size: 24px;
-    margin-bottom: 10px;
+    color: black;
+    margin-left: 50px;
+    white-space: nowrap; /* ★絶対に改行させない */
+    line-height: 1;
+    letter-spacing: -0.02em;
 }
