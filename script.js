@@ -49,11 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
    NHKニュース速報 自動取得 (AllOriginsプロキシ経由)
    ========================================= */
 async function fetchNHKSokuho() {
-    // テストしたいRSSのURL（NHKでも自作でもOK）
     const targetUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml'; 
 
     try {
-        // 拡張機能がONなら、ここがエラーにならずに直接データを取れます
         const response = await fetch(targetUrl); 
         if (!response.ok) throw new Error(`HTTPエラー: ${response.status}`);
         
@@ -64,21 +62,20 @@ async function fetchNHKSokuho() {
         const item = xmlDoc.querySelector("item");
         if (item) {
             const title = item.querySelector("title").textContent;
-            
-            // コンソールで動いているか確認用
-            console.log("現在取得中のタイトル:", title);
+            console.log("RSSチェック中...", title);
 
+            // タイトルが新しくなった時、または一番最初の起動時だけ表示
             if (title !== lastSokuhoTitle) {
-                // 初回（起動時）は保存だけして、2回目（更新時）からテロップを出す
-                //if (lastSokuhoTitle !== "") {
-                    playSokuhoSound();
-                    showNews(title);
-                //}
+                console.log("★テロップを表示します:", title);
+                
+                playSokuhoSound();
+                showNews(title);
+                
+                // 現在のタイトルを保存
                 lastSokuhoTitle = title;
             }
         }
     } catch (error) {
-        // 画面上の黒いバーにエラーを表示
         showInfoMessage(`RSS取得エラー: ${error.message}`);
     }
 }
