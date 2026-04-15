@@ -11,17 +11,13 @@ const bc = new BroadcastChannel('sokuho_channel');
 let currentPlayer;
 let currentCameraIndex = 0;
 
-// 設定ページからのメッセージ受信
 bc.onmessage = (event) => {
     if (event.data.type === 'TEST_SOKUHO') {
         const audio = document.getElementById('sokuho-audio');
         if (audio) {
             audio.pause();
             audio.currentTime = 0;
-            // 再生に失敗した場合はコンソールに警告を出す
-            audio.play().catch(e => {
-                console.warn("音が鳴りませんでした。メイン画面を一度クリックしてください。", e);
-            });
+            audio.play().catch(e => console.warn("音声を再生するには画面を一度クリックしてください"));
         }
         showNews(event.data.text);
     }
@@ -33,13 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ブラウザの音ブロックを解除するため、どこでもいいので一度クリックされたら無音再生する
+    // 音声ブロック解除用
     document.body.addEventListener('click', () => {
         const audio = document.getElementById('sokuho-audio');
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-        }).catch(() => {});
+        audio.play().then(() => { audio.pause(); audio.currentTime = 0; }).catch(() => {});
     }, { once: true });
 });
 
@@ -55,7 +48,14 @@ window.onYouTubeIframeAPIReady = function() {
         const videoId = extractVideoId(settings.cameras[0]?.url);
         currentPlayer = new YT.Player('player', {
             videoId: videoId || 'dfVK7ld38Ys',
-            playerVars: { 'autoplay': 1, 'mute': 1, 'controls': 0, 'origin': location.origin },
+            playerVars: { 
+                'autoplay': 1, 
+                'mute': 1, 
+                'controls': 0, 
+                'rel': 0,
+                'modestbranding': 1,
+                'origin': location.origin 
+            },
             events: {
                 'onReady': (e) => { 
                     e.target.playVideo(); 
@@ -85,10 +85,8 @@ function loadSettings() {
 function updateStyles() {
     const infoBox = document.getElementById('info-box');
     const tickerContent = document.getElementById('ticker-content');
-
     infoBox.style.fontFamily = settings.clockFont || settings.font;
     tickerContent.style.fontFamily = settings.tickerFont || settings.font;
-
     tickerContent.style.color = settings.tickerColor || "#ffffff";
     tickerContent.style.webkitTextStrokeWidth = (settings.tickerStrokeWidth || 7) + "px";
     tickerContent.style.webkitTextStrokeColor = settings.tickerStrokeColor || "#000000";
