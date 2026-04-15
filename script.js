@@ -298,17 +298,6 @@ function displayBottomNews(titles) {
     }, 15000); 
 }
 
-    // 下からスッと表示
-    container.classList.remove('news-hidden');
-    container.classList.add('news-visible');
-
-    // 15秒後に隠す
-    setTimeout(() => {
-        container.classList.remove('news-visible');
-        container.classList.add('news-hidden');
-    }, 15000); 
-}
-
 /* =========================================
    ページ読み込み完了時の演出
    ========================================= */
