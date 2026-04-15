@@ -10,12 +10,19 @@ let settings = {
 const bc = new BroadcastChannel('sokuho_channel');
 let currentPlayer;
 let currentCameraIndex = 0;
-const sokuhoAudio = new Audio('assets/audio/interrupt-ad.mp3');
 
+// 設定ページからのメッセージ受信
 bc.onmessage = (event) => {
     if (event.data.type === 'TEST_SOKUHO') {
-        sokuhoAudio.currentTime = 0; // 連続再生対応
-        sokuhoAudio.play().catch(e => console.log("Audio play blocked"));
+        const audio = document.getElementById('sokuho-audio');
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+            // 再生に失敗した場合はコンソールに警告を出す
+            audio.play().catch(e => {
+                console.warn("音が鳴りませんでした。メイン画面を一度クリックしてください。", e);
+            });
+        }
         showNews(event.data.text);
     }
 };
@@ -25,14 +32,22 @@ document.addEventListener('DOMContentLoaded', () => {
     updateStyles();
     updateClock();
     setInterval(updateClock, 1000);
+
+    // ブラウザの音ブロックを解除するため、どこでもいいので一度クリックされたら無音再生する
+    document.body.addEventListener('click', () => {
+        const audio = document.getElementById('sokuho-audio');
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }).catch(() => {});
+    }, { once: true });
 });
 
 function updateClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2, '0');
     const m = String(now.getMinutes()).padStart(2, '0');
-    // 半角コロンで出力
-    document.getElementById('clock-display').innerHTML = `${h}<span class="colon">:</span>${m}`;
+    document.getElementById('clock-display').innerHTML = `${h}<span class="colon">：</span>${m}`;
 }
 
 window.onYouTubeIframeAPIReady = function() {
