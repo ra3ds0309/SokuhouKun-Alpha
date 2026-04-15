@@ -201,59 +201,45 @@ body, html {
     margin-left: 20px; /* ニュース同士の間隔 */
 }
 
+/* ニュース全体を囲むコンテナの幅を自動調整にする */
 #side-news-container {
     position: fixed;
-    right: 20px; /* 画面右端からの距離 */
-    top: 100px;  /* 上からの距離を少し下げてみる */
-    width: 300px; /* 少し幅を広げてみる */
-    min-height: 200px;
+    right: 20px;
+    top: 100px;
+    width: auto; /* 幅を中身に合わせる */
+    max-width: 600px; /* 広がりすぎ防止 */
     background: rgba(0, 30, 90, 0.95);
     color: white;
     padding: 20px;
-    z-index: 9999; /* 他の要素より確実に前に出す */
-    transition: transform 0.8s ease-out, opacity 0.8s;
+    z-index: 9999;
+    transition: all 0.8s ease-out;
 }
 
-/* 隠れている状態：ここを 500px くらいにしておき、確実に外へ出す */
-.side-hidden {
-    transform: translateX(500px);
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* 表示されている状態 */
-.side-visible {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-/* 追加：ニュースリストを縦書きにするための設定 */
-#side-news-list {
-    display: flex;
-    flex-direction: row; /* 項目を横に並べる */
-    writing-mode: vertical-rl; /* 右から左へ進む縦書き */
-    text-orientation: upright; /* 文字を正立させる */
-    height: 400px; /* 縦の長さ（はみ出るなら調整してください） */
-    margin-top: 10px;
-}
-
-/* 追加：見出しのデザイン（横書きのまま） */
+/* 見出し：横書き */
 .side-header {
-    writing-mode: horizontal-tb; /* ここだけ横書きに戻す */
+    writing-mode: horizontal-tb;
     font-size: 16px;
     font-weight: bold;
     border-bottom: 2px solid rgba(255, 255, 255, 0.5);
-    margin-bottom: 10px;
-    padding-bottom: 5px;
-    display: block; /* しっかり幅を持たせる */
+    margin-bottom: 15px;
 }
 
-/* 既存の .news-item を上書き・調整 */
+/* ニュースを並べるエリア */
+#side-news-list {
+    display: flex;
+    flex-direction: row-reverse; /* 右からニュースを追加していく */
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    height: 400px; /* この高さに収まるようにする */
+}
+
+/* 各ニュース項目 */
 .news-item {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
-    line-height: 1.2;
-    margin-left: 30px; /* 縦書きなので「左側」にあけて、次の行との間隔を作る */
-    letter-spacing: 0.1em;
-    white-space: nowrap; /* 途中で改行させない */
+    line-height: 1.5;
+    margin-right: 0;
+    margin-left: 30px; /* 次のニュースとの間隔 */
+    white-space: nowrap; /* ★勝手に改行させない */
+    overflow: hidden;
 }
