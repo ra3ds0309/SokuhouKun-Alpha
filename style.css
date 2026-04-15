@@ -31,7 +31,6 @@ body, html {
     color: white;
 }
 
-/* 背景：YouTubeプレイヤー */
 #video-container {
     position: fixed;
     top: 0;
@@ -44,10 +43,9 @@ body, html {
 #player {
     width: 100%;
     height: 100%;
-    transform: scale(1.1); /* 黒縁隠し用 */
+    transform: scale(1.1);
 }
 
-/* UI表示レイヤー */
 #ui-overlay {
     position: fixed;
     top: 0;
@@ -59,7 +57,7 @@ body, html {
 }
 
 /* =========================================
-   ヘッダー（時計・地名・巡回状態）
+   ヘッダー（時計・地名）
    ========================================= */
 #header-container {
     display: flex;
@@ -73,10 +71,9 @@ body, html {
     border-radius: 0 0 12px 12px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    margin-right: 60px; /* 速報スーパーとの間隔（右寄せ用） */
+    margin-right: 60px;
 }
 
-/* 時計表示 */
 #clock-display {
     font-size: 64px;
     font-weight: bold;
@@ -87,37 +84,52 @@ body, html {
     font-feature-settings: "palt";
 }
 
-/* 全角コロンの微調整 */
 .colon {
-    transform: translateY(-2px); /* 高すぎず低すぎずの位置に固定 */
+    transform: translateY(-2px);
     margin: 0 -4px;
 }
 
-/* 地名（カーニング調整あり） */
 #camera-location {
     font-size: 18px;
     color: #aaa;
-    font-feature-settings: "palt"; /* 文字詰め有効 */
-}
-
-/* 巡回状態バッジ */
-#tour-status {
-    font-size: 12px;
-    margin-top: 5px;
-    padding: 2px 8px;
-    background: #d32f2f;
-    border-radius: 4px;
-    display: inline-block;
-    font-weight: bold;
-    transition: background 0.3s;
-}
-.tour-off {
-    background: #555 !important;
-    color: #ccc;
+    font-feature-settings: "palt";
 }
 
 /* =========================================
-   速報テロップ（丸縁取り・影なし・サイズ大）
+   右下情報エリア（巡回状態・URL）
+   ========================================= */
+#bottom-right-container {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+#tour-status {
+    font-size: 14px;
+    padding: 3px 10px;
+    background: #d32f2f;
+    border-radius: 4px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    transition: background 0.3s;
+}
+.tour-off {
+    background: rgba(85, 85, 85, 0.8) !important;
+    color: #ccc;
+}
+
+#url-box {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.4);
+    text-shadow: 1px 1px 2px black;
+}
+
+/* =========================================
+   速報テロップ
    ========================================= */
 #ticker-container {
     margin-top: 35px;
@@ -126,32 +138,18 @@ body, html {
 }
 
 #ticker-content {
-    font-size: 48px; /* サイズアップ */
+    font-size: 48px;
     font-weight: bold;
-    line-height: 1.4; /* 行間確保 */
+    line-height: 1.4;
     font-feature-settings: "palt";
-    
-    /* 強力な丸縁取り設定 */
     paint-order: stroke fill;
     -webkit-text-stroke-linecap: round;
     -webkit-text-stroke-linejoin: round;
-    /* 色と太さはJS（settings）から上書きされます */
 }
 
 /* =========================================
-   その他通知・ボタン
+   設定ボタン・通知
    ========================================= */
-
-/* 右下URL表示 */
-#url-box {
-    position: absolute;
-    bottom: 5px;
-    right: 10px;
-    font-size: 8px;
-    color: rgba(255, 255, 255, 0.3);
-}
-
-/* 設定ボタン（左下） */
 #fixed-settings-trigger {
     position: fixed;
     bottom: 20px;
@@ -167,15 +165,10 @@ body, html {
     justify-content: center;
     border-radius: 50%;
     font-size: 24px;
-    pointer-events: auto; /* クリック可能に */
+    pointer-events: auto;
     transition: 0.3s;
 }
-#fixed-settings-trigger:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-}
 
-/* エラー・通知コンテナ */
 #error-container {
     position: fixed;
     top: 20px;
@@ -187,21 +180,10 @@ body, html {
     pointer-events: none;
 }
 
-/* エラーメッセージ */
-.error-msg {
-    background: #d32f2f;
-    color: white;
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-}
-
-/* カメラ未設定などの通知メッセージ */
 .info-msg {
-    background: #333;
+    background: rgba(34, 34, 34, 0.9);
     color: #fff;
-    padding: 15px 20px;
+    padding: 12px 20px;
     border-radius: 8px;
     margin-bottom: 10px;
     border-left: 5px solid #ffc107;
