@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
    ========================================= */
 async function fetchNHKSokuho() {
     // RSSのURLを指定
-    const targetUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml';
+    const targetUrl = 'https://ra3ds0309-zikkenroom.studio.site/rss/tBO4v5gLnzmwX4Cbo0bs';
     
     // 現在安定しているプロキシサービス(yacdn.org)を使用
     const proxyUrl = `https://api.yacdn.org/proxy?url=${encodeURIComponent(targetUrl)}`;
