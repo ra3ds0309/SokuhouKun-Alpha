@@ -356,3 +356,21 @@ function displaySideNews(titles) {
     opacity: 1;
     transform: scale(1) translateY(0);
 }
+
+// ページ読み込み完了時の演出
+window.addEventListener('load', () => {
+    const bootCard = document.getElementById('boot-card');
+    if (!bootCard) return;
+
+    // 0.5秒後にカードを表示
+    setTimeout(() => {
+        bootCard.classList.remove('boot-hidden');
+        bootCard.classList.add('boot-visible');
+
+        // 3秒間表示したあと消す
+        setTimeout(() => {
+            bootCard.classList.remove('boot-visible');
+            bootCard.classList.add('boot-hidden');
+        }, 3000);
+    }, 500);
+});
