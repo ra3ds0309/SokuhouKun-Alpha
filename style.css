@@ -15,25 +15,42 @@ body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
 #info-box {
     background: #262626; padding: 20px 25px 15px 25px;
     border-radius: 0 0 12px 12px; text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-right: 40px; /* 右の余白を増やしてテロップを寄せた */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+    /* 右の余白をさらに増やしてテロップを右へ寄せる */
+    margin-right: 60px; 
 }
-#clock-display { font-size: 64px; font-weight: bold; line-height: 1; display: flex; align-items: center; justify-content: center; font-feature-settings: "palt"; }
-.colon { transform: translateY(-4px); margin: 0 -4px; }
-#camera-location { font-size: 18px; color: #aaa; }
 
-/* 速報テロップ（影なし・丸縁取り） */
+#clock-display { 
+    font-size: 64px; font-weight: bold; line-height: 1; 
+    display: flex; align-items: center; justify-content: center; 
+    font-feature-settings: "palt" 0; /* 時計は文字詰めをオフにして等間隔に */
+    letter-spacing: 0.1em; /* 文字間隔を少し空ける */
+}
+
+/* 半角コロンの微調整 */
+.colon { 
+    transform: translateY(-2px); 
+    margin: 0 2px;
+    letter-spacing: 0; /* コロン自体の間隔は詰める */
+}
+
+#camera-location { font-size: 18px; color: #aaa; letter-spacing: 0.05em; }
+
+/* 速報テロップ（丸縁取り・行間） */
 #ticker-container { margin-top: 35px; flex-grow: 1; transition: opacity 0.5s; }
 #ticker-content {
-    font-size: 38px; font-weight: bold; line-height: 1.1;
+    font-size: 38px; font-weight: bold; 
+    line-height: 1.5; /* 行間を広めに設定（1.1 → 1.5） */
     font-feature-settings: "palt";
-    /* 丸縁取りの設定 */
+    
+    /* 強力な丸縁取り設定 */
     paint-order: stroke fill;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    -webkit-text-stroke-linecap: round;
+    -webkit-text-stroke-linejoin: round;
 }
 
 #url-box { position: absolute; bottom: 5px; right: 10px; font-size: 8px; color: rgba(255, 255, 255, 0.3); }
 #fixed-settings-trigger { position: fixed; bottom: 20px; left: 20px; z-index: 10000; width: 45px; height: 45px; background: rgba(0,0,0,0.5); color: rgba(255,255,255,0.4); text-decoration: none; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 24px; pointer-events: auto; }
-#error-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 20000; pointer-events: none; }
+#error-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 20000; width: 80%; pointer-events: none; }
 .error-msg { background: #d32f2f; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; }
 .hidden { opacity: 0; }
