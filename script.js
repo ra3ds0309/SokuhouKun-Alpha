@@ -241,64 +241,6 @@ window.onYouTubeIframeAPIReady = function() {
 };
 
 /* =========================================
-   下部ニュース（主なニュース）機能
-   ========================================= */
-async function updateBottomNews() {
-    const targetUrl = 'https://news.yahoo.co.jp/rss/topics/top-picks.xml';
-    try {
-        const response = await fetch(targetUrl);
-        const xmlText = await response.text();
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-        const items = xmlDoc.querySelectorAll("item");
-
-        let newsToDisplay = [];
-        // 最新の3件を取得
-        for (let i = 0; i < 3; i++) {
-            if (items[i]) {
-                newsToDisplay.push(items[i].querySelector("title").textContent);
-            }
-        }
-
-        if (newsToDisplay.length > 0) {
-            // 取得した時刻をセット
-            const now = new Date();
-            const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
-            const timeElement = document.getElementById('news-update-time');
-            if (timeElement) timeElement.innerText = timeStr;
-
-            displayBottomNews(newsToDisplay); 
-        }
-    } catch (e) {
-        console.warn("ニュース取得失敗:", e);
-    }
-}
-
-/* --- script.js の displayBottomNews 関数を以下に書き換えてください --- */
-function displayBottomNews(titles) {
-    const container = document.getElementById('bottom-news-container');
-    const list = document.getElementById('bottom-news-list');
-    if (!container || !list) return;
-
-    list.innerHTML = "";
-    titles.forEach(t => {
-        const div = document.createElement('div');
-        div.className = 'news-item';
-        // JS側では「▼」を入れず、テキストのみをセットする
-        div.innerText = t; 
-        list.appendChild(div);
-    });
-
-    container.classList.remove('news-hidden');
-    container.classList.add('news-visible');
-
-    setTimeout(() => {
-        container.classList.remove('news-visible');
-        container.classList.add('news-hidden');
-    }, 15000); 
-}
-
-/* =========================================
    ページ読み込み完了時の演出
    ========================================= */
 window.addEventListener('load', () => {
