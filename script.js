@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
    ========================================= */
 async function fetchNHKSokuho() {
     // 自分のRSSのURLに置き換えてください
-    const targetUrl = 'https://your-own-rss-feed.com/test.xml'; 
+    const targetUrl = 'https://ra3ds0309-zikkenroom.studio.site/rss/tBO4v5gLnzmwX4Cbo0bs'; 
     
     // プロキシを yacdn.org に設定
     const proxyUrl = `https://api.yacdn.org/proxy?url=${encodeURIComponent(targetUrl + "?t=" + Date.now())}`;
