@@ -194,3 +194,9 @@ body, html {
 .hidden {
     opacity: 0;
 }
+
+/* style.css の末尾に追加 */
+.news-item {
+    text-combine-upright: none; /* 日本語を立たせる設定 */
+    margin-left: 20px; /* ニュース同士の間隔 */
+}
