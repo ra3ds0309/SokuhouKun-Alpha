@@ -49,33 +49,26 @@ document.addEventListener('DOMContentLoaded', () => {
    NHKニュース速報 自動取得 (AllOriginsプロキシ経由)
    ========================================= */
 async function fetchNHKSokuho() {
-    // RSSのURLを指定
-    const targetUrl = 'https://ra3ds0309-zikkenroom.studio.site/rss/tBO4v5gLnzmwX4Cbo0bs';
+    // 自分のRSSのURLに置き換えてください
+    const targetUrl = 'https://your-own-rss-feed.com/test.xml'; 
     
-    // 現在安定しているプロキシサービス(yacdn.org)を使用
-    const proxyUrl = `https://api.yacdn.org/proxy?url=${encodeURIComponent(targetUrl)}`;
+    // プロキシを yacdn.org に設定
+    const proxyUrl = `https://api.yacdn.org/proxy?url=${encodeURIComponent(targetUrl + "?t=" + Date.now())}`;
 
     try {
         const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error('Network response was not ok');
+        if (!response.ok) throw new Error(`サーバー応答エラー: ${response.status}`);
         
         const xmlText = await response.text();
-        
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlText, "text/xml");
 
-        // RSSの場合、ニュース1件は <item> タグに入っています
         const item = xmlDoc.querySelector("item");
         if (!item) return;
 
-        // タイトルを取得
         const title = item.querySelector("title").textContent;
 
-        // 前回のタイトルと比較して、新着があれば表示
         if (title !== lastSokuhoTitle) {
-            console.log("NHK RSS新着ニュース:", title);
-            
-            // 初回読み込み時は表示せず、2回目以降（更新時）に表示・音出し
             if (lastSokuhoTitle !== "") {
                 playSokuhoSound();
                 showNews(title);
@@ -83,7 +76,9 @@ async function fetchNHKSokuho() {
             lastSokuhoTitle = title;
         }
     } catch (error) {
-        console.warn("ra3ds0309 RSSの取得に失敗しました:", error.message);
+        // コンソールだけでなく、画面上にもメッセージを出す
+        console.warn("RSS取得失敗:", error.message);
+        showInfoMessage(`RSS取得エラー: 通信に失敗しました。URLや接続を確認してください。`);
     }
 }
 
