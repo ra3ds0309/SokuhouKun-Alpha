@@ -1,57 +1,214 @@
-/* フォント定義 */
-@font-face { font-family: 'UD Shin Go'; src: url('assets/fonts/A-OTF-UDShinGoPr6-Medium.otf'); }
-@font-face { font-family: 'New Rodin'; src: url('assets/fonts/FOT-NewRodinPro-DB.otf'); }
-@font-face { font-family: 'Rodin NTLG'; src: url('assets/fonts/FOT-RodinNTLGPro-DB.otf'); }
-@font-face { font-family: 'UD Kakugo'; src: url('assets/fonts/FOT-UDKakugo_LargePr6-DB.otf'); }
+/* =========================================
+   フォント定義
+   ========================================= */
+@font-face {
+    font-family: 'UD Shin Go';
+    src: url('assets/fonts/A-OTF-UDShinGoPr6-Medium.otf');
+}
+@font-face {
+    font-family: 'New Rodin';
+    src: url('assets/fonts/FOT-NewRodinPro-DB.otf');
+}
+@font-face {
+    font-family: 'Rodin NTLG';
+    src: url('assets/fonts/FOT-RodinNTLGPro-DB.otf');
+}
+@font-face {
+    font-family: 'UD Kakugo';
+    src: url('assets/fonts/FOT-UDKakugo_LargePr6-DB.otf');
+}
 
-body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; color: white; }
+/* =========================================
+   基本レイアウト
+   ========================================= */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    color: white;
+}
 
-#video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-#player { width: 100%; height: 100%; transform: scale(1.1); }
-#ui-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
+/* 背景：YouTubeプレイヤー */
+#video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+#player {
+    width: 100%;
+    height: 100%;
+    transform: scale(1.1); /* 黒縁隠し用 */
+}
 
-/* 時計ボックス */
-#header-container { display: flex; align-items: flex-start; padding: 0 30px; }
+/* UI表示レイヤー */
+#ui-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* =========================================
+   ヘッダー（時計・地名・巡回状態）
+   ========================================= */
+#header-container {
+    display: flex;
+    align-items: flex-start;
+    padding: 0 30px;
+}
+
 #info-box {
-    background: #262626; padding: 20px 25px 15px 25px;
-    border-radius: 0 0 12px 12px; text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
-    margin-right: 60px; 
+    background: #262626;
+    padding: 20px 25px 15px 25px;
+    border-radius: 0 0 12px 12px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    margin-right: 60px; /* 速報スーパーとの間隔（右寄せ用） */
 }
 
-#clock-display { 
-    font-size: 64px; font-weight: bold; line-height: 1; 
-    display: flex; align-items: center; justify-content: center; 
-    font-feature-settings: "palt"; 
+/* 時計表示 */
+#clock-display {
+    font-size: 64px;
+    font-weight: bold;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-feature-settings: "palt";
 }
 
-/* 全角コロンの高さ微調整 */
-.colon { 
-    transform: translateY(-2px); /* -4pxから-2pxに下げました */
+/* 全角コロンの微調整 */
+.colon {
+    transform: translateY(-2px); /* 高すぎず低すぎずの位置に固定 */
     margin: 0 -4px;
 }
 
-/* 地名のカーニング設定 */
-#camera-location { 
-    font-size: 18px; 
-    color: #aaa; 
-    font-feature-settings: "palt"; /* 文字詰め（カーニング）を有効化 */
+/* 地名（カーニング調整あり） */
+#camera-location {
+    font-size: 18px;
+    color: #aaa;
+    font-feature-settings: "palt"; /* 文字詰め有効 */
 }
 
-/* 速報テロップ */
-#ticker-container { margin-top: 35px; flex-grow: 1; transition: opacity 0.5s; }
+/* 巡回状態バッジ */
+#tour-status {
+    font-size: 12px;
+    margin-top: 5px;
+    padding: 2px 8px;
+    background: #d32f2f;
+    border-radius: 4px;
+    display: inline-block;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+.tour-off {
+    background: #555 !important;
+    color: #ccc;
+}
+
+/* =========================================
+   速報テロップ（丸縁取り・影なし・サイズ大）
+   ========================================= */
+#ticker-container {
+    margin-top: 35px;
+    flex-grow: 1;
+    transition: opacity 0.5s;
+}
+
 #ticker-content {
-    font-size: 48px; 
-    font-weight: bold; 
-    line-height: 1.4;
+    font-size: 48px; /* サイズアップ */
+    font-weight: bold;
+    line-height: 1.4; /* 行間確保 */
     font-feature-settings: "palt";
+    
+    /* 強力な丸縁取り設定 */
     paint-order: stroke fill;
     -webkit-text-stroke-linecap: round;
     -webkit-text-stroke-linejoin: round;
+    /* 色と太さはJS（settings）から上書きされます */
 }
 
-#url-box { position: absolute; bottom: 5px; right: 10px; font-size: 8px; color: rgba(255, 255, 255, 0.3); }
-#fixed-settings-trigger { position: fixed; bottom: 20px; left: 20px; z-index: 10000; width: 45px; height: 45px; background: rgba(0,0,0,0.5); color: rgba(255,255,255,0.4); text-decoration: none; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 24px; pointer-events: auto; }
-#error-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 20000; width: 80%; pointer-events: none; }
-.error-msg { background: #d32f2f; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; }
-.hidden { opacity: 0; }
+/* =========================================
+   その他通知・ボタン
+   ========================================= */
+
+/* 右下URL表示 */
+#url-box {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* 設定ボタン（左下） */
+#fixed-settings-trigger {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 10000;
+    width: 45px;
+    height: 45px;
+    background: rgba(0, 0, 0, 0.5);
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 24px;
+    pointer-events: auto; /* クリック可能に */
+    transition: 0.3s;
+}
+#fixed-settings-trigger:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* エラー・通知コンテナ */
+#error-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20000;
+    width: 80%;
+    max-width: 600px;
+    pointer-events: none;
+}
+
+/* エラーメッセージ */
+.error-msg {
+    background: #d32f2f;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+/* カメラ未設定などの通知メッセージ */
+.info-msg {
+    background: #333;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 5px solid #ffc107;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    font-weight: bold;
+}
+
+.hidden {
+    opacity: 0;
+}
