@@ -350,36 +350,40 @@ function hideTicker() {
     }
 }
 
-/* --- 地震情報のテスト送出用関数 --- */
-function testEQ(type = "strong") {
-    // テスト用の仮想データ
+/* --- 通常のニュース速報（Ticker）の表示・消去 --- */
+function showTicker(text) {
+    const ticker = document.getElementById('ticker-container');
+    const content = document.getElementById('ticker-content');
+    if (!ticker || !content) return;
+
+    // 表示内容をセット
+    content.innerText = text;
+
+    // エフェクトなしで表示
+    ticker.style.display = 'block';
+    ticker.classList.remove('hidden');
+
+    // 7秒後にエフェクトなしで消去
+    setTimeout(() => {
+        ticker.style.display = 'none';
+        ticker.classList.add('hidden');
+    }, 7000);
+}
+
+/* --- コンソールテスト用の地震情報（再掲・整理） --- */
+window.testEQ = function(type = "strong") {
+    // 指示書に基づいたダミーデータ
     const testData = {
         earthquake: {
             time: new Date().toISOString(),
             maxScale: type === "strong" ? 50 : 30, // 50なら震度5弱(強い)、30なら震度3(地震)
-            domesticTsunami: "None", // 心配なし
-            hypocenter: {
-                name: "愛知県西部",
-                depth: 10,
-                magnitude: 4.5
-            }
+            domesticTsunami: "None",
+            hypocenter: { name: "愛知県西部", depth: 10, magnitude: 4.5 }
         },
         points: [
-            { pref: "愛知県", addr: "名古屋市中区", scale: type === "strong" ? 50 : 30 },
-            { pref: "愛知県", addr: "蒲郡市", scale: type === "strong" ? 45 : 20 }
+            { addr: "名古屋市中区", scale: type === "strong" ? 50 : 30 },
+            { addr: "蒲郡市", scale: type === "strong" ? 45 : 20 }
         ]
     };
-
-    console.log("テスト地震情報を送出します:", type);
-    processEQData(testData);
-}
-
-/* --- キーボードショートカットにテストを追加 --- */
-window.addEventListener('keydown', (e) => {
-    if (e.key === 't' || e.key === 'T') {
-        testEQ("strong"); // 'T'キーで震度5弱のテスト
-    }
-    if (e.key === 'g' || e.key === 'G') {
-        testEQ("normal"); // 'G'キーで震度3のテスト
-    }
-});
+    processEQData(testData); // すでに定義済みの処理へ渡す
+};
