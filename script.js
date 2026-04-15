@@ -291,19 +291,22 @@ function displaySideNews(titles) {
     const list = document.getElementById('side-news-list');
     if (!container || !list) return;
 
+    // 一度リストを空にする
     list.innerHTML = "";
+    
+    // 各ニュースを個別のdivとして追加
     titles.forEach(t => {
         const div = document.createElement('div');
         div.className = 'news-item';
-        div.innerText = "▼" + t; // 文頭に▼を追加
+        div.innerText = "▼" + t; // 各項目の頭に▼をつける
         list.appendChild(div);
     });
 
-    // クラスを付け替えて「右からスッと出す」
+    // 表示アニメーション
     container.classList.remove('side-hidden');
     container.classList.add('side-visible');
 
-    // 15秒間表示して、その後また右に隠す
+    // 15秒後に自動で隠す
     setTimeout(() => {
         container.classList.remove('side-visible');
         container.classList.add('side-hidden');
