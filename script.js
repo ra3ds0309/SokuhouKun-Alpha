@@ -245,3 +245,71 @@ window.onYouTubeIframeAPIReady = function() {
         });
     } catch (e) { console.error("YT Init Error"); }
 };
+
+/* =========================================
+   サイドニュース（主なニュース）機能
+   ========================================= */
+
+async function updateSideNews() {
+    const targetUrl = 'https://news.yahoo.co.jp/rss/topics/top-picks.xml';
+    try {
+        const response = await fetch(targetUrl);
+        const xmlText = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+        const items = xmlDoc.querySelectorAll("item");
+
+        const now = new Date();
+        const currentHour = now.getHours();
+        const targetHour = currentHour === 0 ? 23 : currentHour - 1; // 0時のときは前日23時
+
+        let newsToDisplay = [];
+        items.forEach(item => {
+            const pubDate = new Date(item.querySelector("pubDate").textContent);
+            if (pubDate.getHours() === targetHour) {
+                // タイトルが長すぎる場合は20文字くらいで切る（画面からはみ出さないよう）
+                let title = item.querySelector("title").textContent;
+                if(title.length > 20) title = title.substring(0, 19) + "…";
+                newsToDisplay.push(title);
+            }
+        });
+
+        if (newsToDisplay.length > 0) {
+            // 見出しの時間をセット（例：16:00の主なニュース）
+            document.getElementById('side-header-time').innerText = `${currentHour}:00の主なニュース`;
+            displaySideNews(newsToDisplay.slice(0, 3)); 
+        }
+    } catch (e) {
+        console.warn("サイドニュース取得失敗:", e);
+    }
+}
+
+function displaySideNews(titles) {
+    const container = document.getElementById('side-news-container');
+    const list = document.getElementById('side-news-list');
+    
+    list.innerHTML = "";
+    titles.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'news-item';
+        div.innerText = `▼${t}`;
+        list.appendChild(div);
+    });
+
+    container.classList.remove('side-hidden');
+    container.classList.add('side-visible');
+
+    // 10秒後に消す
+    setTimeout(() => {
+        container.classList.remove('side-visible');
+        container.classList.add('side-hidden');
+    }, 10000);
+}
+
+// 毎時00分00秒にチェックするタイマー
+setInterval(() => {
+    const now = new Date();
+    if (now.getMinutes() === 0 && now.getSeconds() === 0) {
+        updateSideNews();
+    }
+}, 1000);
