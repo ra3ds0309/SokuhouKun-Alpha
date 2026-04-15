@@ -1,30 +1,25 @@
+/* =========================================
+   基本設定・状態管理
+   ========================================= */
 let settings = {
     clockFont: "'UD Shin Go', sans-serif",
     tickerFont: "'UD Shin Go', sans-serif",
     tickerColor: "#ffffff",
     tickerStrokeColor: "#000000",
     tickerStrokeWidth: 7,
-    cameras: []
+    cameras: [{ url: "https://www.youtube.com/embed/dfVK7ld38Ys", location: "サンプル映像" }]
 };
 
 const bc = new BroadcastChannel('sokuho_channel');
 let currentPlayer;
 let currentCameraIndex = 0;
-let isTourActive = true; // 自動巡回のフラグ
-let tourInterval; // インターバル保持用
+let isTourActive = true; 
+let tourInterval;
+let lastSokuhoTitle = ""; // NHK速報の重複チェック用
 
-bc.onmessage = (event) => {
-    if (event.data.type === 'TEST_SOKUHO') {
-        const audio = document.getElementById('sokuho-audio');
-        if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.play().catch(() => {});
-        }
-        showNews(event.data.text);
-    }
-};
-
+/* =========================================
+   初期化処理
+   ========================================= */
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     updateStyles();
@@ -34,30 +29,87 @@ document.addEventListener('DOMContentLoaded', () => {
     // キーボードイベントの登録
     window.addEventListener('keydown', handleKeyDown);
 
+    // NHK速報の定期チェック開始 (1分おき)
+    fetchNHKSokuho();
+    setInterval(fetchNHKSokuho, 60000);
+
+    // ブラウザの音声ブロック解除用
     document.body.addEventListener('click', () => {
         const audio = document.getElementById('sokuho-audio');
-        audio.play().then(() => { audio.pause(); audio.currentTime = 0; }).catch(() => {});
+        if (audio) {
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+            }).catch(() => {});
+        }
     }, { once: true });
 });
 
-// キーボード操作の処理
+/* =========================================
+   NHKニュース速報 自動取得 (AllOriginsプロキシ経由)
+   ========================================= */
+async function fetchNHKSokuho() {
+    const targetUrl = 'https://api.web.nhk/sokuho/news/sokuho_news.xml';
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+
+    try {
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+
+        const item = xmlDoc.querySelector("item");
+        if (!item) return;
+
+        const title = item.querySelector("title").textContent;
+
+        // 新着ニュースがある場合のみ表示
+        if (title !== lastSokuhoTitle) {
+            console.log("NHK速報受信:", title);
+            
+            // 起動直後の1回目は表示せず、保持だけする（古いニュースが出ないようにするため）
+            if (lastSokuhoTitle !== "") {
+                playSokuhoSound();
+                showNews(title);
+            }
+            lastSokuhoTitle = title;
+        }
+    } catch (error) {
+        console.error("NHK速報の取得に失敗:", error);
+    }
+}
+
+/* =========================================
+   操作・イベント処理
+   ========================================= */
+
+// 設定画面などからの手動テスト用メッセージ受信
+bc.onmessage = (event) => {
+    if (event.data.type === 'TEST_SOKUHO') {
+        playSokuhoSound();
+        showNews(event.data.text);
+    }
+};
+
+// キーボード操作
 function handleKeyDown(e) {
     // 数字キー 1-9 (keyCode 49-57) と 0 (keyCode 48)
     if (e.keyCode >= 48 && e.keyCode <= 57) {
-        // 1-9はそのまま、0は10番目のカメラとして扱う
         let num = e.keyCode - 48;
         let index = num === 0 ? 9 : num - 1; 
-        
         switchCameraDirectly(index);
     }
-    
-    // 「S」キーなどで巡回ON/OFFを切り替えるオプション（任意）
+    // Sキーで巡回ON/OFF
     if (e.key.toLowerCase() === 's') {
         toggleTour();
     }
 }
 
-// カメラを直接切り替える
+/* =========================================
+   カメラ制御機能
+   ========================================= */
 function switchCameraDirectly(index) {
     if (settings.cameras[index] && settings.cameras[index].url) {
         currentCameraIndex = index;
@@ -65,23 +117,21 @@ function switchCameraDirectly(index) {
         if (nextId && currentPlayer && currentPlayer.loadVideoById) {
             currentPlayer.loadVideoById(nextId);
             updateCameraDisplay();
-            showInfoMessage(`カメラ ${index + 1}: ${settings.cameras[index].location} に切り替えました`);
+            showInfoMessage(`カメラ ${index + 1}: ${settings.cameras[index].location}`);
         }
     } else {
-        showInfoMessage(`キー ${index + 1} にはライブカメラが設定されていません`);
+        showInfoMessage(`キー ${index + 1} にはカメラが設定されていません`);
     }
 }
 
-// 巡回機能のON/OFF
 function toggleTour() {
     isTourActive = !isTourActive;
     const statusLabel = document.getElementById('tour-status');
-    
     if (isTourActive) {
         statusLabel.innerText = "巡回: ON";
         statusLabel.classList.remove('tour-off');
         startTour();
-        showInfoMessage("自動巡回を開始しました（3分ごと）");
+        showInfoMessage("自動巡回を開始しました");
     } else {
         statusLabel.innerText = "巡回: OFF";
         statusLabel.classList.add('tour-off');
@@ -99,7 +149,43 @@ function stopTour() {
     clearInterval(tourInterval);
 }
 
-// メッセージ表示用（エラーコンテナを汎用的に利用）
+function switchNextCamera() {
+    if (!isTourActive || settings.cameras.length <= 1) return;
+    currentCameraIndex = (currentCameraIndex + 1) % settings.cameras.length;
+    const nextId = extractVideoId(settings.cameras[currentCameraIndex].url);
+    if (nextId && currentPlayer.loadVideoById) {
+        currentPlayer.loadVideoById(nextId);
+        updateCameraDisplay();
+    }
+}
+
+/* =========================================
+   表示更新・ユーティリティ
+   ========================================= */
+function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('clock-display').innerHTML = `${h}<span class="colon">：</span>${m}`;
+}
+
+function showNews(text) {
+    const container = document.getElementById('ticker-container');
+    document.getElementById('ticker-content').innerHTML = text;
+    container.classList.remove('hidden');
+    if (window.sokuhoTimeout) clearTimeout(window.sokuhoTimeout);
+    window.sokuhoTimeout = setTimeout(() => { container.classList.add('hidden'); }, 30000);
+}
+
+function playSokuhoSound() {
+    const audio = document.getElementById('sokuho-audio');
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+    }
+}
+
 function showInfoMessage(text) {
     const container = document.getElementById('error-container');
     const div = document.createElement('div');
@@ -107,36 +193,6 @@ function showInfoMessage(text) {
     div.innerText = text;
     container.appendChild(div);
     setTimeout(() => div.remove(), 4000);
-}
-
-window.onYouTubeIframeAPIReady = function() {
-    try {
-        const firstCam = settings.cameras[0]?.url ? extractVideoId(settings.cameras[0].url) : 'dfVK7ld38Ys';
-        currentPlayer = new YT.Player('player', {
-            videoId: firstCam,
-            playerVars: { 'autoplay': 1, 'mute': 1, 'controls': 0, 'rel': 0, 'origin': location.origin },
-            events: {
-                'onReady': (e) => { 
-                    e.target.playVideo(); 
-                    updateCameraDisplay(); 
-                    if (isTourActive) startTour();
-                }
-            }
-        });
-    } catch (e) { console.error("YT Init Error"); }
-};
-
-// 以降、extractVideoId, updateClock, loadSettings, updateStyles 等は前回と同じ
-function switchNextCamera() {
-    if (!isTourActive || settings.cameras.length <= 1) return;
-    currentCameraIndex = (currentCameraIndex + 1) % settings.cameras.length;
-    switchCameraDirectly(currentCameraIndex);
-}
-
-function updateClock() {
-    const now = new Date();
-    document.getElementById('clock-display').innerHTML = 
-        `${String(now.getHours()).padStart(2, '0')}<span class="colon">：</span>${String(now.getMinutes()).padStart(2, '0')}`;
 }
 
 function loadSettings() {
@@ -147,10 +203,11 @@ function loadSettings() {
 function updateStyles() {
     const infoBox = document.getElementById('info-box');
     const tickerContent = document.getElementById('ticker-content');
+    if (!infoBox || !tickerContent) return;
     infoBox.style.fontFamily = settings.clockFont;
     tickerContent.style.fontFamily = settings.tickerFont;
     tickerContent.style.color = settings.tickerColor;
-    tickerContent.style.webkitTextStrokeWidth = settings.tickerStrokeWidth + "px";
+    tickerContent.style.webkitTextStrokeWidth = (settings.tickerStrokeWidth || 7) + "px";
     tickerContent.style.webkitTextStrokeColor = settings.tickerStrokeColor;
 }
 
@@ -164,14 +221,28 @@ function updateCameraDisplay() {
 
 function extractVideoId(url) {
     if (!url) return null;
+    if (url.includes('youtube.com/embed/')) return url.split('embed/')[1].split('?')[0];
+    if (url.includes('v=')) return url.split('v=')[1].split('&')[0];
     const parts = url.split('/');
     return parts[parts.length - 1].split('?')[0];
 }
 
-function showNews(text) {
-    const container = document.getElementById('ticker-container');
-    document.getElementById('ticker-content').innerHTML = text;
-    container.classList.remove('hidden');
-    if (window.sokuhoTimeout) clearTimeout(window.sokuhoTimeout);
-    window.sokuhoTimeout = setTimeout(() => { container.classList.add('hidden'); }, 30000);
-}
+/* =========================================
+   YouTube Player API 連携
+   ========================================= */
+window.onYouTubeIframeAPIReady = function() {
+    try {
+        const firstId = settings.cameras[0] ? extractVideoId(settings.cameras[0].url) : 'dfVK7ld38Ys';
+        currentPlayer = new YT.Player('player', {
+            videoId: firstId,
+            playerVars: { 'autoplay': 1, 'mute': 1, 'controls': 0, 'rel': 0, 'origin': location.origin },
+            events: {
+                'onReady': (e) => { 
+                    e.target.playVideo(); 
+                    updateCameraDisplay(); 
+                    if (isTourActive) startTour();
+                }
+            }
+        });
+    } catch (e) { console.error("YT Init Error"); }
+};
