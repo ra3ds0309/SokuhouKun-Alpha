@@ -49,36 +49,37 @@ document.addEventListener('DOMContentLoaded', () => {
    NHKニュース速報 自動取得 (AllOriginsプロキシ経由)
    ========================================= */
 async function fetchNHKSokuho() {
-    // 自分のRSSのURLに置き換えてください
-    const targetUrl = 'https://ra3ds0309-zikkenroom.studio.site/rss/tBO4v5gLnzmwX4Cbo0bs'; 
-    
-    // プロキシを yacdn.org に設定
-    const proxyUrl = `https://api.yacdn.org/proxy?url=${encodeURIComponent(targetUrl + "?t=" + Date.now())}`;
+    // テストしたいRSSのURL（NHKでも自作でもOK）
+    const targetUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml'; 
 
     try {
-        const response = await fetch(proxyUrl);
-        if (!response.ok) throw new Error(`サーバー応答エラー: ${response.status}`);
+        // 拡張機能がONなら、ここがエラーにならずに直接データを取れます
+        const response = await fetch(targetUrl); 
+        if (!response.ok) throw new Error(`HTTPエラー: ${response.status}`);
         
         const xmlText = await response.text();
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlText, "text/xml");
 
         const item = xmlDoc.querySelector("item");
-        if (!item) return;
+        if (item) {
+            const title = item.querySelector("title").textContent;
+            
+            // コンソールで動いているか確認用
+            console.log("現在取得中のタイトル:", title);
 
-        const title = item.querySelector("title").textContent;
-
-        if (title !== lastSokuhoTitle) {
-            if (lastSokuhoTitle !== "") {
-                playSokuhoSound();
-                showNews(title);
+            if (title !== lastSokuhoTitle) {
+                // 初回（起動時）は保存だけして、2回目（更新時）からテロップを出す
+                if (lastSokuhoTitle !== "") {
+                    playSokuhoSound();
+                    showNews(title);
+                }
+                lastSokuhoTitle = title;
             }
-            lastSokuhoTitle = title;
         }
     } catch (error) {
-        // コンソールだけでなく、画面上にもメッセージを出す
-        console.warn("RSS取得失敗:", error.message);
-        showInfoMessage(`RSS取得エラー: 通信に失敗しました。URLや接続を確認してください。`);
+        // 画面上の黒いバーにエラーを表示
+        showInfoMessage(`RSS取得エラー: ${error.message}`);
     }
 }
 
