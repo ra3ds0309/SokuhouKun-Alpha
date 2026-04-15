@@ -148,11 +148,11 @@ body, html {
 }
 
 /* =========================================
-   下部ニュースカード（新デザイン）
+   下部ニュースカード（完璧再現版）
    ========================================= */
 #bottom-news-container {
     position: fixed;
-    bottom: 50px;
+    bottom: 0; /* 画面下端に固定 */
     left: 50%;
     transform: translateX(-50%);
     width: 85%;
@@ -176,35 +176,45 @@ body, html {
 
 .news-card {
     background: white;
-    border-radius: 12px;
+    /* 下側に角丸をつけず、下に繋がるようにする */
+    border-radius: 12px 12px 0 0; 
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0,0,0,0.6);
 }
 
-/* 青ヘッダー */
+/* 青ヘッダー：中央揃え */
 .news-header {
     background: #002060;
     color: white;
-    padding: 12px 30px;
+    padding: 15px 30px; /* パディングを増やして大きく */
+    display: flex;
+    justify-content: center; /* 中央揃え */
+    align-items: center;
+}
+
+.header-center-wrapper {
     display: flex;
     align-items: baseline;
     gap: 15px;
+    /* 文字のカーニング設定（プロポーショナルメトリクス） */
+    font-feature-settings: "palt"; 
 }
 
 .header-main {
-    font-size: 36px;
+    font-size: 36px; /* 見出しを大きく */
     font-weight: 900;
     letter-spacing: 0.1em;
 }
 
 .header-sub {
-    font-size: 22px;
+    font-size: 18px;
     opacity: 0.8;
+    margin-bottom: 5px;
 }
 
 /* ニュースリスト */
 #bottom-news-list {
-    padding: 20px 30px;
+    padding: 25px 30px 40px 30px; /* 下側のパディングを増やして「繋がっている」感を出す */
     color: black;
     display: flex;
     flex-direction: column;
@@ -219,6 +229,16 @@ body, html {
     text-overflow: ellipsis;
     line-height: 1.2;
     letter-spacing: -0.02em;
+    /* ニュース本文にもカーニング設定 */
+    font-feature-settings: "palt"; 
+}
+
+/* ▼記号を少し小さく、上に寄せる調整 */
+.news-item::before {
+    content: "▼";
+    font-size: 26px;
+    margin-right: 5px;
+    vertical-align: super;
 }
 
 /* =========================================
