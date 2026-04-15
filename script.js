@@ -259,25 +259,21 @@ async function updateSideNews() {
         const xmlDoc = parser.parseFromString(xmlText, "text/xml");
         const items = xmlDoc.querySelectorAll("item");
 
-        const now = new Date();
-        const currentHour = now.getHours();
-        const targetHour = currentHour === 0 ? 23 : currentHour - 1; // 0時のときは前日23時
-
         let newsToDisplay = [];
-        items.forEach(item => {
-            const pubDate = new Date(item.querySelector("pubDate").textContent);
-            if (pubDate.getHours() === targetHour) {
-                // タイトルが長すぎる場合は20文字くらいで切る（画面からはみ出さないよう）
-                let title = item.querySelector("title").textContent;
+        // 時間チェックを飛ばして、単純に上から3件取る
+        for (let i = 0; i < 3; i++) {
+            if (items[i]) {
+                let title = items[i].querySelector("title").textContent;
                 if(title.length > 20) title = title.substring(0, 19) + "…";
                 newsToDisplay.push(title);
             }
-        });
+        }
 
         if (newsToDisplay.length > 0) {
-            // 見出しの時間をセット（例：16:00の主なニュース）
-            document.getElementById('side-header-time').innerText = `${currentHour}:00の主なニュース`;
-            displaySideNews(newsToDisplay.slice(0, 3)); 
+            // ヘッダーも現在の時間に合わせる
+            const now = new Date();
+            document.getElementById('side-header-time').innerText = `${now.getHours()}:00の主なニュース`;
+            displaySideNews(newsToDisplay); 
         }
     } catch (e) {
         console.warn("サイドニュース取得失敗:", e);
