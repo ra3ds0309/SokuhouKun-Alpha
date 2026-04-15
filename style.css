@@ -245,25 +245,27 @@ body, html {
     font-family: 'Rodin NTLG', sans-serif;
 }
 
-/* ニュースを横に並べる設定 */
+/* ニュースを並べるエリアの設定 */
 #side-news-list {
-    display: flex;
-    flex-direction: row-reverse; /* 右から左へニュースを並べる */
-    writing-mode: vertical-rl;
+    display: flex; /* 横（左方向）に並べるための設定 */
+    flex-direction: row-reverse; /* 右端から左に向かって順番に並べる */
+    writing-mode: vertical-rl; /* 縦書き */
     text-orientation: upright;
     margin: auto 0;
     height: 90%;
+    align-items: flex-start;
 }
 
 /* 各ニュース項目の設定 */
 .news-item {
-    font-family: 'Rodin NTLG', sans-serif; /* 指定のフォントを使用 */
-    font-size: 40px; 
+    font-family: 'Rodin NTLG', sans-serif;
+    font-size: 42px; /* ロダンらしさを出すためのサイズ */
     font-weight: 900;
     color: black;
-    margin-left: 60px; /* ★ここを増やすと、ニュース間の「改行」代わりの余白になります */
-    white-space: nowrap; /* 1つのニュースが途中で折れないようにする */
+    margin-left: 60px; /* ★ここがニュース同士の「横の間隔」になります */
+    white-space: nowrap; /* 1つのニュースが途中で折れ曲がるのを防ぐ */
     line-height: 1.1;
+    letter-spacing: -0.05em;
     display: block;
 }
 
