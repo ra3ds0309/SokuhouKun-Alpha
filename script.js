@@ -50,26 +50,27 @@ document.addEventListener('DOMContentLoaded', () => {
    ========================================= */
 async function fetchNHKSokuho() {
     const targetUrl = 'https://api.web.nhk/sokuho/news/sokuho_news.xml';
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+    
+    // AllOriginsが落ちているので、別のプロキシ(yacdn.org)を試す
+    const proxyUrl = `https://api.yacdn.org/proxy?url=${encodeURIComponent(targetUrl)}`;
 
     try {
         const response = await fetch(proxyUrl);
         if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
+        
+        // yacdn.orgは直接XMLテキストを返してくることが多いので text() で受ける
+        const xmlText = await response.text();
         
         const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
 
         const item = xmlDoc.querySelector("item");
         if (!item) return;
 
         const title = item.querySelector("title").textContent;
 
-        // 新着ニュースがある場合のみ表示
         if (title !== lastSokuhoTitle) {
             console.log("NHK速報受信:", title);
-            
-            // 起動直後の1回目は表示せず、保持だけする（古いニュースが出ないようにするため）
             if (lastSokuhoTitle !== "") {
                 playSokuhoSound();
                 showNews(title);
@@ -77,7 +78,9 @@ async function fetchNHKSokuho() {
             lastSokuhoTitle = title;
         }
     } catch (error) {
-        console.error("NHK速報の取得に失敗:", error);
+        console.warn("NHK速報の取得に失敗しました（別のプロキシを試します）:", error.message);
+        
+        // もし yacdn もダメなら、さらに別のプロキシ（CORS Proxy.ioなど）を試すような工夫もできますが、まずはこれで行きましょう
     }
 }
 
