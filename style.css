@@ -203,7 +203,7 @@ body, html {
 
 /* --- CSSの末尾を以下のように修正・上書きしてください --- */
 
-/* 右側のニュースコンテナ */
+/* 右側のニュースコンテナ：初期状態は隠す */
 #side-news-container {
     position: fixed;
     right: 0;
@@ -211,18 +211,16 @@ body, html {
     height: 100vh;
     background: white;
     display: flex;
-    flex-direction: row-reverse;
-    padding: 0 30px;
+    flex-direction: row-reverse; /* 右から順に並べる */
+    padding: 0 40px;
     z-index: 9999;
-    /* @font-faceで定義した 'Rodin NTLG' を指定 */
-    font-family: 'Rodin NTLG', sans-serif;
+    font-family: 'Rodin NTLG', sans-serif; /* 定義済みのフォントを指定 */
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s;
-    pointer-events: none; /* 映像の操作を邪魔しない */
 }
 
-/* ★初期状態：画面の右外に隠す（translateX(100%)にする） */
+/* 隠れている状態 */
 .side-hidden {
-    transform: translateX(100%); 
+    transform: translateX(100%);
     opacity: 0;
 }
 
@@ -232,13 +230,13 @@ body, html {
     opacity: 1;
 }
 
-/* 見出し：「この時間の主なニュース」に固定 */
+/* 青い見出し：この時間の主なニュース */
 .side-header {
     writing-mode: vertical-rl;
     text-orientation: upright;
     background: #002060;
     color: white;
-    font-size: 26px; /* 少し大きく */
+    font-size: 26px;
     font-weight: 900;
     padding: 40px 12px;
     height: fit-content;
@@ -247,22 +245,25 @@ body, html {
     font-family: 'Rodin NTLG', sans-serif;
 }
 
+/* ニュースを並べるエリア */
 #side-news-list {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: row-reverse; /* ニュースを右から左へ並べる */
     writing-mode: vertical-rl;
     text-orientation: upright;
     margin: auto 0;
     height: 90%;
 }
 
+/* 各ニュース項目：ここを修正 */
 .news-item {
-    font-size: 42px; /* ロダンらしさを出すために大きく */
+    font-size: 40px; 
     font-weight: 900;
     color: black;
-    margin-left: 60px;
-    white-space: nowrap;
+    margin-left: 60px; /* ニュース同士の間隔 */
+    white-space: nowrap; /* 折り返さず1列にする */
     line-height: 1.1;
     letter-spacing: -0.05em;
     font-family: 'Rodin NTLG', sans-serif;
+    display: block; /* 独立したブロックにする */
 }
