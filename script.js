@@ -3,8 +3,16 @@ let settings = {
     cameras: [{ url: "https://www.youtube.com/embed/dfVK7ld38Ys", location: "サンプル映像" }]
 };
 
+const bc = new BroadcastChannel('sokuho_channel');
 let currentPlayer;
 let currentCameraIndex = 0;
+
+// 設定ページからのメッセージ受信
+bc.onmessage = (event) => {
+    if (event.data.type === 'TEST_SOKUHO') {
+        showNews(event.data.text);
+    }
+};
 
 function showError(code, message) {
     const container = document.getElementById('error-container');
@@ -24,8 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateClock() {
     const now = new Date();
-    document.getElementById('clock-display').innerText = 
-        `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    // コロンを span で囲んで出力
+    document.getElementById('clock-display').innerHTML = `${h}<span class="colon">：</span>${m}`;
 }
 
 window.onYouTubeIframeAPIReady = function() {
@@ -40,11 +50,11 @@ window.onYouTubeIframeAPIReady = function() {
                     updateCameraDisplay(); 
                     setInterval(switchNextCamera, 180000); 
                 },
-                'onError': (e) => showError("YT_PLAY_" + e.data, "動画の再生に失敗しました。URLを確認してください。")
+                'onError': (e) => showError("YT_ERR", "動画再生エラーが発生しました。")
             }
         });
     } catch (e) {
-        showError("YT_INIT", "YouTubeプレイヤーの起動に失敗しました。");
+        showError("YT_INIT", "YouTube初期化に失敗しました。");
     }
 };
 
@@ -56,6 +66,14 @@ function switchNextCamera() {
         currentPlayer.loadVideoById(nextId);
         updateCameraDisplay();
     }
+}
+
+function showNews(text) {
+    const container = document.getElementById('ticker-container');
+    document.getElementById('ticker-content').innerHTML = text;
+    container.classList.remove('hidden');
+    if (window.sokuhoTimeout) clearTimeout(window.sokuhoTimeout);
+    window.sokuhoTimeout = setTimeout(() => { container.classList.add('hidden'); }, 30000);
 }
 
 function loadSettings() {
@@ -79,6 +97,5 @@ function updateCameraDisplay() {
 function extractVideoId(url) {
     if (!url) return null;
     const parts = url.split('/');
-    const lastPart = parts[parts.length - 1];
-    return lastPart.split('?')[0];
+    return parts[parts.length - 1].split('?')[0];
 }
