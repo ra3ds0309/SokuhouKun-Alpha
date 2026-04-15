@@ -186,7 +186,7 @@ body, html {
 .news-header {
     background: #002060;
     color: white;
-    padding: 5px 30px; /* パディングを増やして大きく */
+    padding: 0px 20px; /* パディングを増やして大きく */
     display: flex;
     justify-content: center; /* 中央揃え */
     align-items: center;
@@ -209,7 +209,7 @@ body, html {
 .header-sub {
     font-size: 24px;
     opacity: 0.8;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
 }
 
 /* ニュースリスト */
