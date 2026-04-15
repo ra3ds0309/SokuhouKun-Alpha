@@ -250,6 +250,8 @@ window.onYouTubeIframeAPIReady = function() {
    サイドニュース（主なニュース）機能
    ========================================= */
 
+/* --- script.js の updateSideNews と displaySideNews を以下に差し替え --- */
+
 async function updateSideNews() {
     const targetUrl = 'https://news.yahoo.co.jp/rss/topics/top-picks.xml';
     try {
@@ -264,7 +266,7 @@ async function updateSideNews() {
         for (let i = 0; i < 3; i++) {
             if (items[i]) {
                 let title = items[i].querySelector("title").textContent;
-                // 縦書きで画面からはみ出さないよう、18文字程度でカット
+                // 18文字以内でカット（縦書きの収まりを良くする）
                 if(title.length > 18) {
                     title = title.substring(0, 17) + "…";
                 }
@@ -273,8 +275,10 @@ async function updateSideNews() {
         }
 
         if (newsToDisplay.length > 0) {
-            // 見出しを固定
-            document.getElementById('side-header-time').innerText = "この時間の主なニュース";
+            // 見出しを「この時間の主なニュース」に固定
+            const header = document.getElementById('side-header-time');
+            if (header) header.innerText = "この時間の主なニュース";
+            
             displaySideNews(newsToDisplay); 
         }
     } catch (e) {
@@ -285,21 +289,23 @@ async function updateSideNews() {
 function displaySideNews(titles) {
     const container = document.getElementById('side-news-container');
     const list = document.getElementById('side-news-list');
-    
+    if (!container || !list) return;
+
     list.innerHTML = "";
     titles.forEach(t => {
         const div = document.createElement('div');
         div.className = 'news-item';
-        // CSSの ::before で ▼ をつけるので、ここでは文字だけ入れる
-        div.innerText = t; 
+        div.innerText = "▼" + t; // 文頭に▼を追加
         list.appendChild(div);
     });
 
+    // クラスを付け替えて「右からスッと出す」
     container.classList.remove('side-hidden');
     container.classList.add('side-visible');
 
+    // 15秒間表示して、その後また右に隠す
     setTimeout(() => {
         container.classList.remove('side-visible');
         container.classList.add('side-hidden');
-    }, 10000); // 10秒間表示
+    }, 15000); 
 }
