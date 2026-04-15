@@ -226,3 +226,34 @@ body, html {
     transform: translateX(0);
     opacity: 1;
 }
+
+/* 追加：ニュースリストを縦書きにするための設定 */
+#side-news-list {
+    display: flex;
+    flex-direction: row; /* 項目を横に並べる */
+    writing-mode: vertical-rl; /* 右から左へ進む縦書き */
+    text-orientation: upright; /* 文字を正立させる */
+    height: 400px; /* 縦の長さ（はみ出るなら調整してください） */
+    margin-top: 10px;
+}
+
+/* 追加：見出しのデザイン（横書きのまま） */
+.side-header {
+    writing-mode: horizontal-tb; /* ここだけ横書きに戻す */
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    display: block; /* しっかり幅を持たせる */
+}
+
+/* 既存の .news-item を上書き・調整 */
+.news-item {
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1.2;
+    margin-left: 30px; /* 縦書きなので「左側」にあけて、次の行との間隔を作る */
+    letter-spacing: 0.1em;
+    white-space: nowrap; /* 途中で改行させない */
+}
