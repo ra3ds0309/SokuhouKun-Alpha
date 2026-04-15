@@ -302,7 +302,15 @@ body, html {
     display: none !important;
 }
 
-/* ニュース速報のコンテナも transition を消すか、JSで直接 display: none する */
+/* ニュース速報コンテナの修正 */
 #ticker-container {
-    /* transition: opacity 0.5s;  ← この行を削除するか、非表示時に transition を切る */
+    /* transition: opacity 0.5s;  ← もし残っていたら削除してください */
+    display: none; /* 初期状態 */
+    transition: none !important;
+}
+
+/* 隠す設定を強化 */
+.hidden, .eq-hidden {
+    display: none !important;
+    transition: none !important;
 }
