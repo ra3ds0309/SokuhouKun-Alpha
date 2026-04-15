@@ -46,9 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================
-   NHKニュース速報 自動取得 (AllOriginsプロキシ経由)
+   NHKニュース速報 自動取得
    ========================================= */
-    async function fetchNHKSokuho() {
+async function fetchNHKSokuho() {
     const targetUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml'; 
 
     try {
@@ -64,14 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const title = item.querySelector("title").textContent;
             console.log("RSSチェック中...", title);
 
-            // タイトルが新しくなった時、または一番最初の起動時だけ表示
             if (title !== lastSokuhoTitle) {
-                console.log("★テロップを表示します:", title);
-                
                 playSokuhoSound();
                 showNews(title);
-                
-                // 現在のタイトルを保存
                 lastSokuhoTitle = title;
             }
         }
@@ -83,8 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
 /* =========================================
    操作・イベント処理
    ========================================= */
-
-// 設定画面などからの手動テスト用メッセージ受信
 bc.onmessage = (event) => {
     if (event.data.type === 'TEST_SOKUHO') {
         playSokuhoSound();
@@ -92,17 +85,18 @@ bc.onmessage = (event) => {
     }
 };
 
-// キーボード操作
 function handleKeyDown(e) {
-    // 数字キー 1-9 (keyCode 49-57) と 0 (keyCode 48)
     if (e.keyCode >= 48 && e.keyCode <= 57) {
         let num = e.keyCode - 48;
         let index = num === 0 ? 9 : num - 1; 
         switchCameraDirectly(index);
     }
-    // Sキーで巡回ON/OFF
     if (e.key.toLowerCase() === 's') {
         toggleTour();
+    }
+    // Nキーで下部ニュースを手動表示（テスト用）
+    if (e.key.toLowerCase() === 'n') {
+        updateBottomNews();
     }
 }
 
@@ -141,7 +135,7 @@ function toggleTour() {
 
 function startTour() {
     stopTour();
-    tourInterval = setInterval(switchNextCamera, 180000); // 3分
+    tourInterval = setInterval(switchNextCamera, 180000); 
 }
 
 function stopTour() {
@@ -247,12 +241,9 @@ window.onYouTubeIframeAPIReady = function() {
 };
 
 /* =========================================
-   サイドニュース（主なニュース）機能
+   下部ニュース（主なニュース）機能
    ========================================= */
-
-/* --- script.js の updateSideNews と displaySideNews を以下に差し替え --- */
-
-async function updateSideNews() {
+async function updateBottomNews() {
     const targetUrl = 'https://news.yahoo.co.jp/rss/topics/top-picks.xml';
     try {
         const response = await fetch(targetUrl);
@@ -265,69 +256,64 @@ async function updateSideNews() {
         // 最新の3件を取得
         for (let i = 0; i < 3; i++) {
             if (items[i]) {
-                let title = items[i].querySelector("title").textContent;
-                // 18文字以内でカット（縦書きの収まりを良くする）
-                if(title.length > 18) {
-                    title = title.substring(0, 17) + "…";
-                }
-                newsToDisplay.push(title);
+                newsToDisplay.push(items[i].querySelector("title").textContent);
             }
         }
 
         if (newsToDisplay.length > 0) {
-            // 見出しを「この時間の主なニュース」に固定
-            const header = document.getElementById('side-header-time');
-            if (header) header.innerText = "この時間の主なニュース";
-            
-            displaySideNews(newsToDisplay); 
+            // 取得した時刻をセット
+            const now = new Date();
+            const timeStr = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+            const timeElement = document.getElementById('news-update-time');
+            if (timeElement) timeElement.innerText = timeStr;
+
+            displayBottomNews(newsToDisplay); 
         }
     } catch (e) {
-        console.warn("サイドニュース取得失敗:", e);
+        console.warn("ニュース取得失敗:", e);
     }
 }
 
-function displaySideNews(titles) {
-    const container = document.getElementById('side-news-container');
-    const list = document.getElementById('side-news-list');
+function displayBottomNews(titles) {
+    const container = document.getElementById('bottom-news-container');
+    const list = document.getElementById('bottom-news-list');
     if (!container || !list) return;
 
-    // リストを一度空にする
     list.innerHTML = "";
-    
-    // ニュース1つずつに対して個別の<div>（箱）を作る
     titles.forEach(t => {
         const div = document.createElement('div');
         div.className = 'news-item';
-        // 各項目の文頭に「▼」を追加
         div.innerText = "▼" + t; 
         list.appendChild(div);
     });
 
-    // 表示アニメーション（右から出す）
-    container.classList.remove('side-hidden');
-    container.classList.add('side-visible');
+    // 下からスッと表示
+    container.classList.remove('news-hidden');
+    container.classList.add('news-visible');
 
-    // 15秒間表示したあと消す
+    // 15秒後に隠す
     setTimeout(() => {
-        container.classList.remove('side-visible');
-        container.classList.add('side-hidden');
+        container.classList.remove('news-visible');
+        container.classList.add('news-hidden');
     }, 15000); 
 }
 
-// ページ読み込み完了時の演出
+/* =========================================
+   ページ読み込み完了時の演出
+   ========================================= */
 window.addEventListener('load', () => {
     const bootCard = document.getElementById('boot-card');
-    if (!bootCard) return;
-
-    // 0.5秒後にカードを表示
-    setTimeout(() => {
-        bootCard.classList.remove('boot-hidden');
-        bootCard.classList.add('boot-visible');
-
-        // 3秒間表示したあと消す
+    if (bootCard) {
         setTimeout(() => {
-            bootCard.classList.remove('boot-visible');
-            bootCard.classList.add('boot-hidden');
-        }, 3000);
-    }, 500);
+            bootCard.classList.remove('boot-hidden');
+            bootCard.classList.add('boot-visible');
+            setTimeout(() => {
+                bootCard.classList.remove('boot-visible');
+                bootCard.classList.add('boot-hidden');
+            }, 3000);
+        }, 500);
+    }
+    
+    // 起動から10秒後に自動で「主なニュース」を表示
+    setTimeout(updateBottomNews, 10000);
 });
