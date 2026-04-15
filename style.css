@@ -200,3 +200,29 @@ body, html {
     text-combine-upright: none; /* 日本語を立たせる設定 */
     margin-left: 20px; /* ニュース同士の間隔 */
 }
+
+#side-news-container {
+    position: fixed;
+    right: 20px; /* 画面右端からの距離 */
+    top: 100px;  /* 上からの距離を少し下げてみる */
+    width: 300px; /* 少し幅を広げてみる */
+    min-height: 200px;
+    background: rgba(0, 30, 90, 0.95);
+    color: white;
+    padding: 20px;
+    z-index: 9999; /* 他の要素より確実に前に出す */
+    transition: transform 0.8s ease-out, opacity 0.8s;
+}
+
+/* 隠れている状態：ここを 500px くらいにしておき、確実に外へ出す */
+.side-hidden {
+    transform: translateX(500px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 表示されている状態 */
+.side-visible {
+    transform: translateX(0);
+    opacity: 1;
+}
