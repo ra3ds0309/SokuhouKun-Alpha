@@ -260,19 +260,21 @@ async function updateSideNews() {
         const items = xmlDoc.querySelectorAll("item");
 
         let newsToDisplay = [];
-        // 時間チェックを飛ばして、単純に上から3件取る
+        // 最新の3件を取得
         for (let i = 0; i < 3; i++) {
             if (items[i]) {
                 let title = items[i].querySelector("title").textContent;
-                if(title.length > 20) title = title.substring(0, 19) + "…";
+                // 縦書きで画面からはみ出さないよう、18文字程度でカット
+                if(title.length > 18) {
+                    title = title.substring(0, 17) + "…";
+                }
                 newsToDisplay.push(title);
             }
         }
 
         if (newsToDisplay.length > 0) {
-            // ヘッダーも現在の時間に合わせる
-            const now = new Date();
-            document.getElementById('side-header-time').innerText = `${now.getHours()}:00の主なニュース`;
+            // 見出しを固定
+            document.getElementById('side-header-time').innerText = "この時間の主なニュース";
             displaySideNews(newsToDisplay); 
         }
     } catch (e) {
@@ -288,24 +290,16 @@ function displaySideNews(titles) {
     titles.forEach(t => {
         const div = document.createElement('div');
         div.className = 'news-item';
-        div.innerText = `▼${t}`;
+        // CSSの ::before で ▼ をつけるので、ここでは文字だけ入れる
+        div.innerText = t; 
         list.appendChild(div);
     });
 
     container.classList.remove('side-hidden');
     container.classList.add('side-visible');
 
-    // 10秒後に消す
     setTimeout(() => {
         container.classList.remove('side-visible');
         container.classList.add('side-hidden');
-    }, 10000);
+    }, 10000); // 10秒間表示
 }
-
-// 毎時00分00秒にチェックするタイマー
-setInterval(() => {
-    const now = new Date();
-    if (now.getMinutes() === 0 && now.getSeconds() === 0) {
-        updateSideNews();
-    }
-}, 1000);
