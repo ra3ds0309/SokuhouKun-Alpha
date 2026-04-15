@@ -201,45 +201,76 @@ body, html {
     margin-left: 20px; /* ニュース同士の間隔 */
 }
 
-/* ニュース全体を囲むコンテナの幅を自動調整にする */
+/* 右側のニュースコンテナ：画面の右端に固定し、高さを100%にする */
 #side-news-container {
     position: fixed;
-    right: 20px;
-    top: 100px;
-    width: auto; /* 幅を中身に合わせる */
-    max-width: 600px; /* 広がりすぎ防止 */
-    background: rgba(0, 30, 90, 0.95);
-    color: white;
-    padding: 20px;
+    right: 0;
+    top: 0;
+    height: 100vh; /* 画面の高さ100% */
+    width: auto;
+    background: white; /* 背景は白 */
+    display: flex;
+    flex-direction: row-reverse; /* 右から順に配置 */
+    padding: 0 40px; /* 左右の余白 */
     z-index: 9999;
-    transition: all 0.8s ease-out;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.1); /* 少し影を入れて浮かせる */
 }
 
-/* 見出し：横書き */
+/* 隠れている状態 */
+.side-hidden {
+    transform: translateX(100%); /* 完全に画面外へ */
+    opacity: 0;
+}
+
+/* 表示されている状態 */
+.side-visible {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* 一番右端の「この時間の主なニュース」見出し */
 .side-header {
-    writing-mode: horizontal-tb;
-    font-size: 16px;
-    font-weight: bold;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
-    margin-bottom: 15px;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    background: #001e5a; /* 濃い紺色 */
+    color: white;
+    font-size: 20px;
+    font-weight: 900;
+    padding: 20px 10px;
+    height: fit-content;
+    margin: 0 0 0 20px; /* 右側に配置 */
+    letter-spacing: 0.2em;
+    display: flex;
+    align-items: center;
 }
 
 /* ニュースを並べるエリア */
 #side-news-list {
     display: flex;
-    flex-direction: row-reverse; /* 右からニュースを追加していく */
+    flex-direction: row-reverse;
     writing-mode: vertical-rl;
     text-orientation: upright;
-    height: 400px; /* この高さに収まるようにする */
+    margin: auto 0; /* 上下中央に配置 */
+    height: 80%; /* 画面中央付近に収める */
 }
 
 /* 各ニュース項目 */
 .news-item {
-    font-size: 20px;
-    font-weight: bold;
-    line-height: 1.5;
-    margin-right: 0;
-    margin-left: 30px; /* 次のニュースとの間隔 */
-    white-space: nowrap; /* ★勝手に改行させない */
-    overflow: hidden;
+    font-size: 32px; /* 大きめのフォント */
+    font-weight: 900;
+    color: #000;
+    margin-left: 40px; /* 項目同士の間隔 */
+    line-height: 1.1;
+    letter-spacing: -0.05em; /* 文字間を少し詰めると「放送テロップ」っぽくなります */
+    white-space: nowrap;
+    display: flex;
+    align-items: flex-start;
+}
+
+/* ▼ の記号を少し小さく、上に寄せる調整 */
+.news-item::before {
+    content: "▼";
+    font-size: 24px;
+    margin-bottom: 10px;
 }
