@@ -14,7 +14,7 @@
             <div id="info-box">
                 <div id="clock-display">00<span class="colon">：</span>00</div>
                 <div id="camera-location">カメラ場所</div>
-                </div>
+            </div>
             <div id="ticker-container" class="hidden">
                 <div id="ticker-content">速報内容</div>
             </div>
@@ -31,26 +31,25 @@
 
     <audio id="sokuho-audio" src="assets/audio/interrupt-ad.mp3" preload="auto"></audio>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="script.js"></script>
-
-    <div id="side-news-container" class="side-hidden">
-        <div class="side-header" id="side-header-time">00:00の主なニュース</div>
-        <div id="side-news-list">
+    <div id="bottom-news-container" class="news-hidden">
+        <div class="news-card">
+            <div class="news-header">
+                <span class="header-main">この時間の主なニュース</span>
+                <span class="header-sub">（Yahoo!ニュース・<span id="news-update-time">XX:XX</span>現在）</span>
             </div>
-    </div>
-    
-    <div id="side-news-container" class="side-hidden">
-        <div class="side-header" id="side-header-time">00:00の主なニュース</div>
-        <div id="side-news-list">
-            </div>
+            <div id="bottom-news-list">
+                </div>
+        </div>
     </div>
 
     <div id="boot-container">
         <div id="boot-card" class="boot-hidden">
             <div class="boot-title">SYSTEM READY</div>
-            <div class="boot-version">読み込み完了 (v2.1)</div>
-                </div>
+            <div class="boot-version">読み込み完了 (v2.2)</div>
+        </div>
     </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="script.js"></script>
 </body>
 </html>
