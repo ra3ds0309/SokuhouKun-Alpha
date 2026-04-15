@@ -259,3 +259,83 @@ window.addEventListener('load', () => {
     // 起動から10秒後に自動で「主なニュース」を表示
     setTimeout(updateBottomNews, 10000);
 });
+
+/* =========================================
+   震度速報
+   ========================================= */
+const P2P_API = "https://api.p2pquake.net/v2/history?codes=551&codes=556&limit=1";
+
+async function checkEarthquake() {
+    try {
+        const response = await fetch(P2P_API);
+        const data = await response.json();
+        if (data.length > 0) {
+            processEQData(data[0]);
+        }
+    } catch (e) {
+        console.error("地震情報取得エラー:", e);
+    }
+}
+
+function processEQData(eq) {
+    const maxScale = eq.earthquake.maxScale; // 震度
+    const points = eq.points;
+    const tsunamiText = getTsunamiMessage(eq.earthquake.domesticTsunami);
+    
+    // 指示書に基づくテキスト生成
+    let pages = [];
+    
+    // p1: 発生時刻・場所
+    const time = new Date(eq.earthquake.time);
+    const timeStr = `${time.getHours()}時${time.getMinutes()}分`;
+    const seismicPower = getSeismicPowerText(maxScale); // 指示書の「地震がありました」等
+    pages.push(`${timeStr}ごろ ${eq.earthquake.hypocenter.name || '〇〇地方'}で ${seismicPower}`);
+
+    // p2: 津波情報
+    pages.push(tsunamiText);
+
+    // p3: 震源詳細
+    pages.push(`震源地は${eq.earthquake.hypocenter.name} 深さ${eq.earthquake.hypocenter.depth}km M${eq.earthquake.hypocenter.magnitude}`);
+
+    // p4以降: 震度別市町村
+    const groupedPoints = groupPointsByScale(points);
+    Object.keys(groupedPoints).reverse().forEach(scale => {
+        const scaleLabel = formatScale(scale);
+        const cities = groupedPoints[scale].join("  ");
+        pages.push(`<span class="shindo-box">震度${scaleLabel}</span> ${cities}`);
+    });
+
+    startEQSuper(pages);
+}
+
+// 指示書：震度による言い回しの変化
+function getSeismicPowerText(scale) {
+    if (scale >= 50) return "強い地震がありました";
+    if (scale >= 40) return "やや強い地震がありました";
+    return "地震がありました";
+}
+
+function startEQSuper(pages) {
+    const el = document.getElementById('earthquake-super');
+    const content = document.getElementById('eq-page-content');
+    let pIdx = 0;
+
+    el.classList.remove('eq-hidden');
+
+    const showNextPage = () => {
+        if (pIdx < pages.length) {
+            content.innerHTML = pages[pIdx];
+            pIdx++;
+            setTimeout(showNextPage, 5000); // 各ページ5秒表示
+        } else {
+            // 全ページ終了後、7秒待ってパッと消す
+            setTimeout(() => {
+                el.classList.add('eq-hidden');
+            }, 7000);
+        }
+    };
+    showNextPage();
+}
+
+// 起動時と定期チェック（2分おきなど）
+setInterval(checkEarthquake, 120000);
