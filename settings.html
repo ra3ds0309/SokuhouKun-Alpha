@@ -6,28 +6,27 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body { background: #1a1a1a; overflow-y: auto; padding: 40px; pointer-events: auto; }
-        .settings-container { 
-            max-width: 800px; margin: 0 auto; background: #222; 
-            padding: 30px; border-radius: 12px; border: 1px solid #333; 
-        }
+        .settings-container { max-width: 800px; margin: 0 auto; background: #222; padding: 30px; border-radius: 12px; border: 1px solid #333; }
         h2 { border-bottom: 2px solid #d32f2f; padding-bottom: 10px; margin-top: 0; }
         h3 { font-size: 18px; margin: 20px 0 10px; color: #eee; }
         .hint { font-size: 12px; color: #888; margin-bottom: 15px; }
-        input[type="text"], select { 
-            background: #333; color: white; border: 1px solid #555; 
-            padding: 10px; border-radius: 4px; font-size: 14px;
-        }
-        button { 
-            background: #d32f2f; color: white; border: none; 
-            padding: 12px 25px; border-radius: 4px; cursor: pointer; font-weight: bold;
-        }
-        button:hover { background: #ff5252; }
+        input[type="text"], select { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 4px; }
+        button { background: #d32f2f; color: white; border: none; padding: 12px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .test-zone { background: #2a2a2a; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px dashed #555; }
     </style>
 </head>
 <body>
     <div class="settings-container">
         <h2>速報くんα システム設定</h2>
-        <p class="hint">設定を変更した後は「設定を保存」を押し、メイン画面を再読み込みしてください。</p>
+
+        <section class="test-zone">
+            <h3>テスト速報送信</h3>
+            <p class="hint">メイン画面が開いている状態で送信すると、即座に反映されます。</p>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="test-text" placeholder="表示したい文字（2行は <br>）" style="flex-grow: 1;">
+                <button id="btn-send-test" style="background: #007bff;">送信</button>
+            </div>
+        </section>
         
         <section>
             <h3>フォント設定</h3>
@@ -40,8 +39,7 @@
         </section>
 
         <section>
-            <h3>ライブカメラ登録（最大10件）</h3>
-            <p class="hint">YouTubeのiframeタグを貼り付けるか、URLを直接入力してください。</p>
+            <h3>ライブカメラ登録</h3>
             <div id="camera-inputs"></div>
         </section>
 
@@ -52,32 +50,33 @@
     </div>
 
     <script>
+        const bc = new BroadcastChannel('sokuho_channel');
         let settings = { font: "'UD Shin Go', sans-serif", cameras: [] };
 
         function init() {
             const saved = localStorage.getItem('sokuhoSettings');
             if (saved) settings = JSON.parse(saved);
-            
             document.getElementById('font-select').value = settings.font;
             const container = document.getElementById('camera-inputs');
-            
             for (let i = 0; i < 10; i++) {
                 const cam = settings.cameras[i] || { url: "", location: "" };
-                const div = document.createElement('div');
-                div.style.display = "flex"; div.style.gap = "10px"; div.style.marginBottom = "10px";
-                div.innerHTML = `
-                    <input type="text" class="cam-loc" value="${cam.location}" placeholder="場所名" style="width:150px;">
-                    <input type="text" class="cam-url" value="${cam.url}" placeholder="URLまたはiframeタグ" style="flex-grow:1;">
-                `;
-                container.appendChild(div);
+                container.innerHTML += `<div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" class="cam-loc" value="${cam.location}" placeholder="場所" style="width:150px;">
+                    <input type="text" class="cam-url" value="${cam.url}" placeholder="URLまたはiframe" style="flex-grow:1;">
+                </div>`;
             }
         }
+
+        // テスト送信ボタン
+        document.getElementById('btn-send-test').onclick = () => {
+            const text = document.getElementById('test-text').value;
+            if(text) bc.postMessage({ type: 'TEST_SOKUHO', text: text });
+        };
 
         document.getElementById('save-settings').onclick = () => {
             settings.font = document.getElementById('font-select').value;
             const urls = document.getElementsByClassName('cam-url');
             const locs = document.getElementsByClassName('cam-loc');
-            
             settings.cameras = [];
             for (let i = 0; i < urls.length; i++) {
                 let val = urls[i].value.trim();
@@ -89,13 +88,10 @@
                     settings.cameras.push({ url: val, location: locs[i].value });
                 }
             }
-            
             localStorage.setItem('sokuhoSettings', JSON.stringify(settings));
-            const status = document.getElementById('save-status');
-            status.innerText = "保存完了！メイン画面を更新してください。";
-            setTimeout(() => status.innerText = "", 3000);
+            document.getElementById('save-status').innerText = "保存完了！";
+            setTimeout(() => document.getElementById('save-status').innerText = "", 3000);
         };
-
         init();
     </script>
 </body>
