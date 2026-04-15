@@ -12,10 +12,10 @@ let currentPlayer;
 let currentCameraIndex = 0;
 const sokuhoAudio = new Audio('assets/audio/interrupt-ad.mp3');
 
-// 設定ページからのメッセージ受信
 bc.onmessage = (event) => {
     if (event.data.type === 'TEST_SOKUHO') {
-        sokuhoAudio.play().catch(e => console.log("Audio play failed: ", e));
+        sokuhoAudio.currentTime = 0; // 連続再生対応
+        sokuhoAudio.play().catch(e => console.log("Audio play blocked"));
         showNews(event.data.text);
     }
 };
@@ -31,7 +31,8 @@ function updateClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2, '0');
     const m = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById('clock-display').innerHTML = `${h}<span class="colon">：</span>${m}`;
+    // 半角コロンで出力
+    document.getElementById('clock-display').innerHTML = `${h}<span class="colon">:</span>${m}`;
 }
 
 window.onYouTubeIframeAPIReady = function() {
@@ -70,11 +71,9 @@ function updateStyles() {
     const infoBox = document.getElementById('info-box');
     const tickerContent = document.getElementById('ticker-content');
 
-    // フォントの個別反映
     infoBox.style.fontFamily = settings.clockFont || settings.font;
     tickerContent.style.fontFamily = settings.tickerFont || settings.font;
 
-    // 色・縁取りの反映
     tickerContent.style.color = settings.tickerColor || "#ffffff";
     tickerContent.style.webkitTextStrokeWidth = (settings.tickerStrokeWidth || 7) + "px";
     tickerContent.style.webkitTextStrokeColor = settings.tickerStrokeColor || "#000000";
