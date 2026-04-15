@@ -339,3 +339,47 @@ function startEQSuper(pages) {
 
 // 起動時と定期チェック（2分おきなど）
 setInterval(checkEarthquake, 120000);
+
+/* --- Ticker（ニュース速報）の消去処理を修正 --- */
+function hideTicker() {
+    const ticker = document.getElementById('ticker-container');
+    if (ticker) {
+        // フェードアウト用のクラス（hiddenなど）を使わず、直接非表示にする
+        ticker.style.display = 'none'; 
+        // あるいはクラスで管理する場合： ticker.classList.add('no-effect-hide');
+    }
+}
+
+/* --- 地震情報のテスト送出用関数 --- */
+function testEQ(type = "strong") {
+    // テスト用の仮想データ
+    const testData = {
+        earthquake: {
+            time: new Date().toISOString(),
+            maxScale: type === "strong" ? 50 : 30, // 50なら震度5弱(強い)、30なら震度3(地震)
+            domesticTsunami: "None", // 心配なし
+            hypocenter: {
+                name: "愛知県西部",
+                depth: 10,
+                magnitude: 4.5
+            }
+        },
+        points: [
+            { pref: "愛知県", addr: "名古屋市中区", scale: type === "strong" ? 50 : 30 },
+            { pref: "愛知県", addr: "蒲郡市", scale: type === "strong" ? 45 : 20 }
+        ]
+    };
+
+    console.log("テスト地震情報を送出します:", type);
+    processEQData(testData);
+}
+
+/* --- キーボードショートカットにテストを追加 --- */
+window.addEventListener('keydown', (e) => {
+    if (e.key === 't' || e.key === 'T') {
+        testEQ("strong"); // 'T'キーで震度5弱のテスト
+    }
+    if (e.key === 'g' || e.key === 'G') {
+        testEQ("normal"); // 'G'キーで震度3のテスト
+    }
+});
