@@ -83,7 +83,7 @@ async function fetchNHKSokuho() {
             lastSokuhoTitle = title;
         }
     } catch (error) {
-        console.warn("NHK RSSの取得に失敗しました:", error.message);
+        console.warn("ra3ds0309 RSSの取得に失敗しました:", error.message);
     }
 }
 
