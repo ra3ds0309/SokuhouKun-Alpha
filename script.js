@@ -1,27 +1,24 @@
 let settings = {
-    font: "'UD Shin Go', sans-serif",
+    clockFont: "'UD Shin Go', sans-serif",
+    tickerFont: "'UD Shin Go', sans-serif",
+    tickerColor: "#ffffff",
+    tickerStrokeColor: "#000000",
+    tickerStrokeWidth: 7,
     cameras: [{ url: "https://www.youtube.com/embed/dfVK7ld38Ys", location: "サンプル映像" }]
 };
 
 const bc = new BroadcastChannel('sokuho_channel');
 let currentPlayer;
 let currentCameraIndex = 0;
+const sokuhoAudio = new Audio('assets/audio/interrupt-ad.mp3');
 
 // 設定ページからのメッセージ受信
 bc.onmessage = (event) => {
     if (event.data.type === 'TEST_SOKUHO') {
+        sokuhoAudio.play().catch(e => console.log("Audio play failed: ", e));
         showNews(event.data.text);
     }
 };
-
-function showError(code, message) {
-    const container = document.getElementById('error-container');
-    const div = document.createElement('div');
-    div.className = 'error-msg';
-    div.innerHTML = `<strong>[ERROR:${code}]</strong><br>${message}`;
-    container.appendChild(div);
-    setTimeout(() => div.remove(), 6000);
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
@@ -34,7 +31,6 @@ function updateClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2, '0');
     const m = String(now.getMinutes()).padStart(2, '0');
-    // コロンを span で囲んで出力
     document.getElementById('clock-display').innerHTML = `${h}<span class="colon">：</span>${m}`;
 }
 
@@ -49,24 +45,13 @@ window.onYouTubeIframeAPIReady = function() {
                     e.target.playVideo(); 
                     updateCameraDisplay(); 
                     setInterval(switchNextCamera, 180000); 
-                },
-                'onError': (e) => showError("YT_ERR", "動画再生エラーが発生しました。")
+                }
             }
         });
     } catch (e) {
-        showError("YT_INIT", "YouTube初期化に失敗しました。");
+        console.error("YT Init Error");
     }
 };
-
-function switchNextCamera() {
-    if (settings.cameras.length <= 1) return;
-    currentCameraIndex = (currentCameraIndex + 1) % settings.cameras.length;
-    const nextId = extractVideoId(settings.cameras[currentCameraIndex].url);
-    if (nextId && currentPlayer && currentPlayer.loadVideoById) {
-        currentPlayer.loadVideoById(nextId);
-        updateCameraDisplay();
-    }
-}
 
 function showNews(text) {
     const container = document.getElementById('ticker-container');
@@ -82,8 +67,27 @@ function loadSettings() {
 }
 
 function updateStyles() {
-    document.getElementById('info-box').style.fontFamily = settings.font;
-    document.getElementById('ticker-content').style.fontFamily = settings.font;
+    const infoBox = document.getElementById('info-box');
+    const tickerContent = document.getElementById('ticker-content');
+
+    // フォントの個別反映
+    infoBox.style.fontFamily = settings.clockFont || settings.font;
+    tickerContent.style.fontFamily = settings.tickerFont || settings.font;
+
+    // 色・縁取りの反映
+    tickerContent.style.color = settings.tickerColor || "#ffffff";
+    tickerContent.style.webkitTextStrokeWidth = (settings.tickerStrokeWidth || 7) + "px";
+    tickerContent.style.webkitTextStrokeColor = settings.tickerStrokeColor || "#000000";
+}
+
+function switchNextCamera() {
+    if (settings.cameras.length <= 1) return;
+    currentCameraIndex = (currentCameraIndex + 1) % settings.cameras.length;
+    const nextId = extractVideoId(settings.cameras[currentCameraIndex].url);
+    if (nextId && currentPlayer.loadVideoById) {
+        currentPlayer.loadVideoById(nextId);
+        updateCameraDisplay();
+    }
 }
 
 function updateCameraDisplay() {
