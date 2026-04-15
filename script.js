@@ -274,6 +274,7 @@ async function updateBottomNews() {
     }
 }
 
+/* --- script.js の displayBottomNews 関数を以下に書き換えてください --- */
 function displayBottomNews(titles) {
     const container = document.getElementById('bottom-news-container');
     const list = document.getElementById('bottom-news-list');
@@ -283,9 +284,19 @@ function displayBottomNews(titles) {
     titles.forEach(t => {
         const div = document.createElement('div');
         div.className = 'news-item';
-        div.innerText = "▼" + t; 
+        // JS側では「▼」を入れず、テキストのみをセットする
+        div.innerText = t; 
         list.appendChild(div);
     });
+
+    container.classList.remove('news-hidden');
+    container.classList.add('news-visible');
+
+    setTimeout(() => {
+        container.classList.remove('news-visible');
+        container.classList.add('news-hidden');
+    }, 15000); 
+}
 
     // 下からスッと表示
     container.classList.remove('news-hidden');
