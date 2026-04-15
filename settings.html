@@ -6,37 +6,55 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body { background: #1a1a1a; overflow-y: auto; padding: 40px; pointer-events: auto; }
-        .settings-container { max-width: 800px; margin: 0 auto; background: #222; padding: 30px; border-radius: 12px; border: 1px solid #333; }
+        .settings-container { max-width: 900px; margin: 0 auto; background: #222; padding: 30px; border-radius: 12px; border: 1px solid #333; }
         h2 { border-bottom: 2px solid #d32f2f; padding-bottom: 10px; margin-top: 0; }
-        h3 { font-size: 18px; margin: 20px 0 10px; color: #eee; }
-        .hint { font-size: 12px; color: #888; margin-bottom: 15px; }
-        input[type="text"], select { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 4px; }
+        .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .test-zone { background: #2a2a2a; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #555; }
+        input[type="text"], input[type="number"], select { background: #333; color: white; border: 1px solid #555; padding: 8px; border-radius: 4px; width: 100%; box-sizing: border-box; }
+        input[type="color"] { background: none; border: none; width: 50px; height: 35px; cursor: pointer; }
         button { background: #d32f2f; color: white; border: none; padding: 12px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .test-zone { background: #2a2a2a; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px dashed #555; }
     </style>
 </head>
 <body>
     <div class="settings-container">
-        <h2>速報くんα システム設定</h2>
+        <h2>速報くんα 詳細設定</h2>
 
         <section class="test-zone">
             <h3>テスト速報送信</h3>
-            <p class="hint">メイン画面が開いている状態で送信すると、即座に反映されます。</p>
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="test-text" placeholder="表示したい文字（2行は <br>）" style="flex-grow: 1;">
-                <button id="btn-send-test" style="background: #007bff;">送信</button>
+                <input type="text" id="test-text" placeholder="表示内容">
+                <button id="btn-send-test" style="background: #007bff;">効果音付きで送信</button>
             </div>
         </section>
         
-        <section>
-            <h3>フォント設定</h3>
-            <select id="font-select" style="width: 100%;">
-                <option value="'UD Shin Go', sans-serif">UD新ゴ</option>
-                <option value="'UD Kakugo', sans-serif">UD角ゴ</option>
-                <option value="'New Rodin', sans-serif">ニューロダン</option>
-                <option value="'Rodin NTLG', sans-serif">ロダンNTLG</option>
-            </select>
-        </section>
+        <div class="section-grid">
+            <section>
+                <h3>時計・地名設定</h3>
+                <label>フォント:</label>
+                <select id="clock-font">
+                    <option value="'UD Shin Go', sans-serif">UD新ゴ</option>
+                    <option value="'UD Kakugo', sans-serif">UD角ゴ</option>
+                    <option value="'New Rodin', sans-serif">ニューロダン</option>
+                    <option value="'Rodin NTLG', sans-serif">ロダンNTLG</option>
+                </select>
+            </section>
+
+            <section>
+                <h3>速報テロップ設定</h3>
+                <label>フォント:</label>
+                <select id="ticker-font">
+                    <option value="'UD Shin Go', sans-serif">UD新ゴ</option>
+                    <option value="'UD Kakugo', sans-serif">UD角ゴ</option>
+                    <option value="'New Rodin', sans-serif">ニューロダン</option>
+                    <option value="'Rodin NTLG', sans-serif">ロダンNTLG</option>
+                </select>
+                <div style="display:flex; gap:10px; margin-top:10px; align-items:center;">
+                    <div>文字色: <input type="color" id="ticker-color"></div>
+                    <div>縁色: <input type="color" id="ticker-stroke-color"></div>
+                    <div style="flex-grow:1;">縁の太さ: <input type="number" id="ticker-stroke-width" min="0" max="20" step="1"></div>
+                </div>
+            </section>
+        </div>
 
         <section>
             <h3>ライブカメラ登録</h3>
@@ -51,33 +69,51 @@
 
     <script>
         const bc = new BroadcastChannel('sokuho_channel');
-        let settings = { font: "'UD Shin Go', sans-serif", cameras: [] };
+        let settings = {
+            clockFont: "'UD Shin Go', sans-serif",
+            tickerFont: "'UD Shin Go', sans-serif",
+            tickerColor: "#ffffff",
+            tickerStrokeColor: "#000000",
+            tickerStrokeWidth: 7,
+            cameras: []
+        };
 
         function init() {
             const saved = localStorage.getItem('sokuhoSettings');
             if (saved) settings = JSON.parse(saved);
-            document.getElementById('font-select').value = settings.font;
+
+            document.getElementById('clock-font').value = settings.clockFont || settings.font;
+            document.getElementById('ticker-font').value = settings.tickerFont || settings.font;
+            document.getElementById('ticker-color').value = settings.tickerColor || "#ffffff";
+            document.getElementById('ticker-stroke-color').value = settings.tickerStrokeColor || "#000000";
+            document.getElementById('ticker-stroke-width').value = settings.tickerStrokeWidth || 7;
+
             const container = document.getElementById('camera-inputs');
             for (let i = 0; i < 10; i++) {
                 const cam = settings.cameras[i] || { url: "", location: "" };
                 container.innerHTML += `<div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <input type="text" class="cam-loc" value="${cam.location}" placeholder="場所" style="width:150px;">
+                    <input type="text" class="cam-loc" value="${cam.location}" placeholder="場所" style="width:120px;">
                     <input type="text" class="cam-url" value="${cam.url}" placeholder="URLまたはiframe" style="flex-grow:1;">
                 </div>`;
             }
         }
 
-        // テスト送信ボタン
         document.getElementById('btn-send-test').onclick = () => {
             const text = document.getElementById('test-text').value;
             if(text) bc.postMessage({ type: 'TEST_SOKUHO', text: text });
         };
 
         document.getElementById('save-settings').onclick = () => {
-            settings.font = document.getElementById('font-select').value;
+            const data = {
+                clockFont: document.getElementById('clock-font').value,
+                tickerFont: document.getElementById('ticker-font').value,
+                tickerColor: document.getElementById('ticker-color').value,
+                tickerStrokeColor: document.getElementById('ticker-stroke-color').value,
+                tickerStrokeWidth: document.getElementById('ticker-stroke-width').value,
+                cameras: []
+            };
             const urls = document.getElementsByClassName('cam-url');
             const locs = document.getElementsByClassName('cam-loc');
-            settings.cameras = [];
             for (let i = 0; i < urls.length; i++) {
                 let val = urls[i].value.trim();
                 if (val) {
@@ -85,12 +121,12 @@
                         const match = val.match(/src=["'](.+?)["']/);
                         val = match ? match[1] : val;
                     }
-                    settings.cameras.push({ url: val, location: locs[i].value });
+                    data.cameras.push({ url: val, location: locs[i].value });
                 }
             }
-            localStorage.setItem('sokuhoSettings', JSON.stringify(settings));
+            localStorage.setItem('sokuhoSettings', JSON.stringify(data));
             document.getElementById('save-status').innerText = "保存完了！";
-            setTimeout(() => document.getElementById('save-status').innerText = "", 3000);
+            setTimeout(() => document.getElementById('save-status').innerText = "", 2000);
         };
         init();
     </script>
