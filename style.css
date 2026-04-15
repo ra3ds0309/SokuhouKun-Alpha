@@ -1,4 +1,4 @@
-/* --- フォント定義 --- */
+/* フォント定義 */
 @font-face { font-family: 'UD Shin Go'; src: url('assets/fonts/A-OTF-UDShinGoPr6-Medium.otf'); }
 @font-face { font-family: 'New Rodin'; src: url('assets/fonts/FOT-NewRodinPro-DB.otf'); }
 @font-face { font-family: 'Rodin NTLG'; src: url('assets/fonts/FOT-RodinNTLGPro-DB.otf'); }
@@ -8,32 +8,37 @@ body, html {
     margin: 0; padding: 0; width: 100%; height: 100%;
     overflow: hidden; background-color: #000; color: white;
     font-family: 'UD Shin Go', sans-serif;
-    font-feature-settings: "palt";
+    font-feature-settings: "palt"; /* 文字詰め有効 */
 }
 
-#video-container {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 1; pointer-events: none;
-}
+#video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 #player { width: 100%; height: 100%; transform: scale(1.1); }
+#ui-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
 
-#ui-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 10; pointer-events: none;
-}
-
-/* 時計ボックス（座布団を上につなげる） */
+/* 時計ボックス修正 */
 #header-container { display: flex; align-items: flex-start; padding: 0 30px; }
 #info-box {
-    background: #262626; padding: 15px 25px;
+    background: #262626; 
+    padding: 20px 25px 15px 25px; /* 上の余白を20pxに増やしました */
     border-radius: 0 0 12px 12px; text-align: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-right: 25px;
 }
-#clock-display { font-size: 64px; font-weight: bold; line-height: 1; margin-bottom: 2px; }
+
+#clock-display { 
+    font-size: 64px; font-weight: bold; line-height: 1; margin-bottom: 5px; 
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* コロンの位置微調整 */
+.colon {
+    display: inline-block;
+    transform: translateY(-4px); /* 少し上に持ち上げ */
+    margin: 0 -4px; /* 全角コロンの左右の余白を少し削る */
+}
+
 #camera-location { font-size: 18px; color: #aaa; }
 
-/* 速報テキスト */
-#ticker-container { margin-top: 30px; flex-grow: 1; transition: opacity 0.5s; }
+#ticker-container { margin-top: 35px; flex-grow: 1; transition: opacity 0.5s; }
 #ticker-content {
     font-size: 38px; font-weight: bold; color: white; line-height: 1.1;
     -webkit-text-stroke: 7px black; paint-order: stroke fill;
@@ -42,24 +47,13 @@ body, html {
 
 #url-box { position: absolute; bottom: 5px; right: 10px; font-size: 8px; color: rgba(255, 255, 255, 0.3); }
 
-/* 左下設定ボタン（独立） */
 #fixed-settings-trigger {
     position: fixed; bottom: 20px; left: 20px; z-index: 10000;
     width: 45px; height: 45px; background: rgba(0, 0, 0, 0.5);
     color: rgba(255, 255, 255, 0.4); text-decoration: none;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 50%; font-size: 24px; pointer-events: auto; transition: 0.3s;
+    border-radius: 50%; font-size: 24px; pointer-events: auto;
 }
-#fixed-settings-trigger:hover { background: rgba(255, 255, 255, 0.2); color: white; }
-
-/* エラー通知 */
-#error-container {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-    z-index: 20000; width: 80%; max-width: 600px; pointer-events: none;
-}
-.error-msg {
-    background: #d32f2f; color: white; padding: 15px 20px;
-    border-radius: 8px; margin-bottom: 10px; font-weight: bold;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-}
+#error-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 20000; width: 80%; pointer-events: none; }
+.error-msg { background: #d32f2f; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; }
 .hidden { opacity: 0; }
