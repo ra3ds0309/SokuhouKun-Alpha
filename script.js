@@ -291,22 +291,23 @@ function displaySideNews(titles) {
     const list = document.getElementById('side-news-list');
     if (!container || !list) return;
 
-    // 一度中身をリセット
+    // リストを一度空にする
     list.innerHTML = "";
     
-    // ニュース1つにつき、1つの <div> を作成して追加
+    // ニュース1つずつに対して個別の<div>（箱）を作る
     titles.forEach(t => {
         const div = document.createElement('div');
         div.className = 'news-item';
-        div.innerText = "▼" + t; // 文頭に▼をつける
+        // 各項目の文頭に「▼」を追加
+        div.innerText = "▼" + t; 
         list.appendChild(div);
     });
 
-    // 表示（スッと出す）
+    // 表示アニメーション（右から出す）
     container.classList.remove('side-hidden');
     container.classList.add('side-visible');
 
-    // 15秒後に隠す
+    // 15秒間表示したあと消す
     setTimeout(() => {
         container.classList.remove('side-visible');
         container.classList.add('side-hidden');
