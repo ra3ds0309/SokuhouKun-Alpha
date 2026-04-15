@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /* =========================================
    NHKニュース速報 自動取得 (AllOriginsプロキシ経由)
    ========================================= */
-async function fetchNHKSokuho() {
+    async function fetchNHKSokuho() {
     const targetUrl = 'https://news.web.nhk/n-data/conf/na/rss/cat0.xml'; 
 
     try {
