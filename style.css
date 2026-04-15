@@ -201,7 +201,9 @@ body, html {
     margin-left: 20px; /* ニュース同士の間隔 */
 }
 
-/* 右側のニュースコンテナ：画面の右端に固定し、高さを100%にする */
+/* --- CSSの末尾を以下のように修正・上書きしてください --- */
+
+/* 右側のニュースコンテナ */
 #side-news-container {
     position: fixed;
     right: 0;
@@ -212,29 +214,42 @@ body, html {
     flex-direction: row-reverse;
     padding: 0 30px;
     z-index: 9999;
-    /* ロダンNTLGを優先的に指定。なければUD角ゴシック系を使用 */
-    font-family: "RodinNTLG Pro EB", "FOT-RodinNTLG Pro EB", "Noto Sans JP", sans-serif;
+    /* @font-faceで定義した 'Rodin NTLG' を指定 */
+    font-family: 'Rodin NTLG', sans-serif;
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s;
+    pointer-events: none; /* 映像の操作を邪魔しない */
 }
 
-/* 見出し：青背景に白文字の縦書き */
+/* ★初期状態：画面の右外に隠す（translateX(100%)にする） */
+.side-hidden {
+    transform: translateX(100%); 
+    opacity: 0;
+}
+
+/* 表示されている状態 */
+.side-visible {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* 見出し：「この時間の主なニュース」に固定 */
 .side-header {
     writing-mode: vertical-rl;
     text-orientation: upright;
-    background: #002060; /* 濃い紺色 */
+    background: #002060;
     color: white;
-    font-size: 24px;
+    font-size: 26px; /* 少し大きく */
     font-weight: 900;
-    padding: 40px 10px;
+    padding: 40px 12px;
     height: fit-content;
     margin: 40px 0 0 20px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
+    font-family: 'Rodin NTLG', sans-serif;
 }
 
-/* ニュースリスト：改行させず、1つずつ独立させる */
 #side-news-list {
     display: flex;
-    flex-direction: row-reverse; /* 右から左へニュースを並べる */
+    flex-direction: row-reverse;
     writing-mode: vertical-rl;
     text-orientation: upright;
     margin: auto 0;
@@ -242,11 +257,12 @@ body, html {
 }
 
 .news-item {
-    font-size: 38px; /* ロダンっぽさを出すために大きく太く */
+    font-size: 42px; /* ロダンらしさを出すために大きく */
     font-weight: 900;
     color: black;
-    margin-left: 50px;
-    white-space: nowrap; /* ★絶対に改行させない */
-    line-height: 1;
-    letter-spacing: -0.02em;
+    margin-left: 60px;
+    white-space: nowrap;
+    line-height: 1.1;
+    letter-spacing: -0.05em;
+    font-family: 'Rodin NTLG', sans-serif;
 }
