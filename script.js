@@ -312,3 +312,47 @@ function displaySideNews(titles) {
         container.classList.add('side-hidden');
     }, 15000); 
 }
+
+/* 起動カードのコンテナ */
+#boot-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 30000; /* 一番手前 */
+    pointer-events: none;
+}
+
+#boot-card {
+    background: rgba(0, 32, 96, 0.9); /* 濃い青 */
+    color: white;
+    padding: 20px 40px;
+    border-left: 8px solid #fbc02d; /* アクセントの黄色 */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    font-family: 'Rodin NTLG', sans-serif;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.boot-title {
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.boot-version {
+    font-size: 28px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+/* アニメーション用クラス */
+.boot-hidden {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+}
+
+.boot-visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
