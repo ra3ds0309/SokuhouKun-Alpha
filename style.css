@@ -192,13 +192,13 @@ body, html {
 }
 
 .header-main {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: 900;
     letter-spacing: 0.1em;
 }
 
 .header-sub {
-    font-size: 18px;
+    font-size: 22px;
     opacity: 0.8;
 }
 
