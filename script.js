@@ -70,10 +70,10 @@ async function fetchNHKSokuho() {
 
             if (title !== lastSokuhoTitle) {
                 // 初回（起動時）は保存だけして、2回目（更新時）からテロップを出す
-                if (lastSokuhoTitle !== "") {
+                //if (lastSokuhoTitle !== "") {
                     playSokuhoSound();
                     showNews(title);
-                }
+                //}
                 lastSokuhoTitle = title;
             }
         }
