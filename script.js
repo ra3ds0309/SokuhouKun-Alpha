@@ -259,3 +259,62 @@ window.addEventListener('load', () => {
     // 起動から10秒後に自動で「主なニュース」を表示
     setTimeout(updateBottomNews, 10000);
 });
+
+/* 緊急地震速報 */
+const P2P_EEW_API = "https://api.p2pquake.net/v2/history?codes=556&limit=1";
+let lastEEWTime = "";
+
+async function checkEEW() {
+    try {
+        const response = await fetch(P2P_EEW_API);
+        const data = await response.json();
+        if (data.length > 0) {
+            const eew = data[0];
+            // 新しい警報かチェック
+            if (eew.time !== lastEEWTime) {
+                lastEEWTime = eew.time;
+                displayEEW(eew);
+            }
+        }
+    } catch (e) {
+        console.error("EEW取得エラー:", e);
+    }
+}
+
+function displayEEW(data) {
+    const container = document.getElementById('eew-container');
+    const hypoEl = document.getElementById('eew-hypocenter');
+    const areasEl = document.getElementById('eew-areas');
+    
+    // 震源地
+    hypoEl.innerText = `${data.earthquake.hypocenter.name}で地震`;
+    
+    // 警戒地域を並べる
+    areasEl.innerHTML = "";
+    data.areas.forEach(a => {
+        const span = document.createElement('span');
+        span.innerText = a.name;
+        areasEl.appendChild(span);
+    });
+
+    // パッと表示
+    container.classList.remove('hidden');
+
+    // 3分後にパッと消す
+    setTimeout(() => {
+        container.classList.add('hidden');
+    }, 180000); // 3分 = 180秒
+}
+
+// 2秒おきにチェック（緊急性が高いため頻度を上げます）
+setInterval(checkEEW, 2000);
+
+/* --- コンソールテスト用 --- */
+window.testEEW = function() {
+    const dummy = {
+        time: "test",
+        earthquake: { hypocenter: { name: "愛知県東部" } },
+        areas: [{ name: "愛知東部" }, { name: "愛知西部" }, { name: "静岡西部" }, { name: "長野南部" }]
+    };
+    displayEEW(dummy);
+};
