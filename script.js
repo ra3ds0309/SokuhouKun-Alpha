@@ -259,3 +259,57 @@ window.addEventListener('load', () => {
     // 起動から10秒後に自動で「主なニュース」を表示
     setTimeout(updateBottomNews, 10000);
 });
+
+// --- エクスポート機能 ---
+document.getElementById('export-settings').onclick = () => {
+    const data = localStorage.getItem('sokuhoSettings');
+    if (!data) {
+        alert("保存された設定がありません。");
+        return;
+    }
+
+    // JSONファイルを作成
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    // ファイル名を「sokuho_settings_日付.json」にする
+    const now = new Date();
+    const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+    
+    a.href = url;
+    a.download = `sokuho_settings_${dateStr}.json`;
+    a.click();
+    
+    URL.revokeObjectURL(url);
+    document.getElementById('io-status').innerText = "エクスポート完了！";
+};
+
+// --- インポート機能 ---
+const fileInput = document.getElementById('import-file');
+document.getElementById('import-trigger').onclick = () => fileInput.click();
+
+fileInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const json = JSON.parse(event.target.result);
+            
+            // データの形式が正しいか簡易チェック
+            if (json.clockFont && json.cameras) {
+                localStorage.setItem('sokuhoSettings', JSON.stringify(json));
+                alert("インポートが完了しました。ページを再読み込みします。");
+                location.reload(); // 設定を反映させるためにリロード
+            } else {
+                throw new Error("不正な設定ファイルです。");
+            }
+        } catch (err) {
+            alert("エラー: 設定ファイルの読み込みに失敗しました。");
+            console.error(err);
+        }
+    };
+    reader.readAsText(file);
+};
