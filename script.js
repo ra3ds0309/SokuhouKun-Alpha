@@ -298,12 +298,14 @@ function displayEEW(data) {
     // 震源地セット
     hypoEl.innerText = `${data.earthquake.hypocenter.name}で地震`;
     
-    // 地域名セット
+    // 地域名セット（県名のみを抽出し、重複を削除）
+    const prefs = data.areas.map(a => a.name.replace(/南部|北部|東部|西部|中部|陸岸|海域/g, "")); 
+    const uniquePrefs = [...new Set(prefs)]; // 重複排除
+
     areasEl.innerHTML = "";
-    data.areas.forEach(a => {
+    uniquePrefs.forEach(prefName => {
         const span = document.createElement('span');
-        span.innerText = a.name;
-        // マージンの代わりにspanで構成
+        span.innerText = prefName;
         areasEl.appendChild(span);
     });
 
@@ -316,15 +318,15 @@ function displayEEW(data) {
     }, 180000);
 }
 
-// 起動直後に一回実行（ここで初回IDをセット）し、その後2秒おきにチェック
-checkEEW();
-setInterval(checkEEW, 2000);
-
-/* --- テスト用関数（コンソールから testEEW() で実行） --- */
+/* --- テスト用関数（コンソール用） --- */
 window.testEEW = function() {
     const dummy = {
         earthquake: { hypocenter: { name: "愛知県東部" } },
-        areas: [{ name: "愛知東部" }, { name: "愛知西部" }, { name: "静岡西部" }, { name: "長野南部" }]
+        areas: [
+            { name: "愛知東部" }, { name: "愛知西部" }, 
+            { name: "静岡西部" }, { name: "静岡東部" },
+            { name: "長野南部" }
+        ]
     };
     displayEEW(dummy);
 };
