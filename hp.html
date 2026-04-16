@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>速報くんα - 公式サイト</title>
+    <title>速報くんα - マニュアル＆ポータル</title>
     <style>
         :root {
             --primary-color: #E92132;
             --bg-dark: #222222;
             --text-white: #FFFFFF;
             --card-bg: #2d2d2d;
+            --accent-blue: #007bff;
         }
 
         body {
@@ -19,94 +20,67 @@
             background-color: var(--bg-dark);
             color: var(--text-white);
             line-height: 1.6;
+            scroll-behavior: smooth;
         }
 
         /* ヘッダー */
         header {
-            padding: 20px 5%;
+            position: sticky;
+            top: 0;
+            background: rgba(34, 34, 34, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid var(--primary-color);
+            z-index: 1000;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
+        .logo { font-size: 22px; font-weight: bold; letter-spacing: 2px; }
+        .version { font-size: 0.7em; background: var(--primary-color); padding: 2px 8px; border-radius: 4px; margin-left: 10px; }
 
-        .version {
-            font-size: 0.8em;
-            background: var(--primary-color);
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin-left: 10px;
-        }
+        nav a { color: white; text-decoration: none; margin-left: 20px; font-size: 0.9em; opacity: 0.8; }
+        nav a:hover { opacity: 1; border-bottom: 1px solid var(--primary-color); }
 
-        /* ヒーローセクション */
-        .hero {
-            padding: 100px 5%;
-            text-align: center;
-            background: linear-gradient(180deg, #222222 0%, #333333 100%);
-        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 5%; }
 
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
+        h2 { border-left: 5px solid var(--primary-color); padding-left: 15px; margin-top: 60px; }
+        h3 { color: var(--primary-color); margin-top: 30px; }
 
-        .hero p {
-            font-size: 20px;
-            color: #cccccc;
-            max-width: 800px;
-            margin: 0 auto 40px;
-        }
-
-        /* 特徴セクション */
-        .features {
-            padding: 80px 5%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-
-        .feature-card {
-            background: var(--card-bg);
+        /* ダウンロードセクション */
+        .download-box {
+            background: linear-gradient(135deg, #333 0%, #444 100%);
             padding: 30px;
             border-radius: 12px;
-            border-top: 4px solid var(--primary-color);
-            transition: transform 0.3s;
+            text-align: center;
+            margin: 40px 0;
+            border: 1px solid #555;
         }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: transform 0.2s, opacity 0.2s;
         }
 
-        .feature-card h3 {
-            margin-top: 0;
-            color: var(--primary-color);
+        .btn:hover { transform: scale(1.05); opacity: 0.9; }
+        .btn-dl { background-color: #444; border: 1px solid var(--primary-color); margin-top: 10px; }
+
+        /* グリッドレイアウト */
+        .guide-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
         }
 
-        /* 操作説明セクション */
-        .how-to {
-            padding: 80px 5%;
-            background-color: #1a1a1a;
-        }
-
-        .kbd-list {
-            list-style: none;
-            padding: 0;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .kbd-list li {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #444;
-        }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 12px; }
 
         kbd {
             background: #444;
@@ -114,76 +88,110 @@
             border: 1px solid #666;
             color: #fff;
             display: inline-block;
-            font-size: 0.85em;
-            font-weight: 700;
-            line-height: 1;
-            padding: 2px 4px;
-            white-space: nowrap;
+            padding: 2px 6px;
+            font-family: monospace;
+            margin: 0 2px;
         }
 
-        /* フッター */
-        footer {
-            padding: 40px 5%;
-            text-align: center;
-            border-top: 1px solid #444;
-            color: #888;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 15px 40px;
-            background-color: var(--primary-color);
+        .step-number {
+            background: var(--primary-color);
             color: white;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 30px;
-            transition: opacity 0.3s;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-size: 14px;
         }
 
-        .btn:hover {
-            opacity: 0.8;
-        }
+        footer { text-align: center; padding: 60px 0; border-top: 1px solid #444; color: #888; font-size: 0.9em; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">速報くんα <span class="version">v3.8</span></div>
+        <nav>
+            <a href="#main-guide">メイン操作</a>
+            <a href="#settings-guide">設定方法</a>
+            <a href="#presets">プリセット</a>
+            <a href="index.html" style="color: var(--primary-color); font-weight: bold;">[ 起動する ]</a>
+        </nav>
     </header>
 
-    <section class="hero">
-        <h1>日常に、リアルタイムの緊張感を。</h1>
-        <p>ライブカメラ、時計、ニュース速報。配信画面やデスクトップを、まるで報道センターのような空間に変えるウェブツール。</p>
-        <a href="index.html" class="btn">ツールを起動する</a>
-    </section>
+    <div class="container">
+        <section style="text-align: center; padding: 40px 0;">
+            <h1 style="font-size: 40px; margin-bottom: 10px;">User Manual & Portal</h1>
+            <p style="color: #aaa; font-size: 18px;">速報くんαを使いこなすための公式ガイド</p>
+        </section>
 
-    <section class="features">
-        <div class="feature-card">
-            <h3>🌐 ライブカメラ連携</h3>
-            <p>最大10箇所のライブカメラを登録可能。YouTubeのURLを貼り付けるだけで、あなただけの「観測網」が完成します。</p>
-        </div>
-        <div class="feature-card">
-            <h3>⚡ リアルタイム速報</h3>
-            <p>NHKのRSSフィードと連携し、最新ニュースを自動取得。専用のチャイムとともにテロップが画面を駆け抜けます。</p>
-        </div>
-        <div class="feature-card">
-            <h3>🎨 自由なカスタマイズ</h3>
-            <p>フォントの種類、文字の色、縁取りの太さまで。配信のスタイルに合わせて、ミリ単位の調整が可能です。</p>
-        </div>
-    </section>
+        <section id="main-guide">
+            <h2>メイン画面の使い方</h2>
+            <div class="guide-grid">
+                <div class="card">
+                    <h3>🎬 ライブカメラの鑑賞</h3>
+                    <p>起動すると、登録されたカメラが順番に表示されます。画面左上には現在の場所、右下にはカメラのURLが表示されます。</p>
+                    <p>※YouTubeの仕様上、最初に画面を一度クリックしないと音声（速報音）が流れません。起動後はどこでも良いのでクリックしてください。</p>
+                </div>
+                <div class="card">
+                    <h3>⌨️ キーボード操作一覧</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 10px;"><kbd>1</kbd> ～ <kbd>9</kbd> : 指定のカメラに切替</li>
+                        <li style="margin-bottom: 10px;"><kbd>0</kbd> : 10番目のカメラに切替</li>
+                        <li style="margin-bottom: 10px;"><kbd>S</kbd> : 自動巡回(3分毎)のON/OFF</li>
+                        <li style="margin-bottom: 10px;"><kbd>N</kbd> : テストニュースの表示</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
-    <section class="how-to">
-        <h2 style="text-align: center; margin-bottom: 40px;">Shortcut Keys</h2>
-        <ul class="kbd-list">
-            <li><span>カメラ切り替え</span> <span><kbd>1</kbd> - <kbd>9</kbd> / <kbd>0</kbd></span></li>
-            <li><span>自動巡回（3分毎） ON/OFF</span> <span><kbd>S</kbd></span></li>
-            <li><span>手動ニュース表示（テスト用）</span> <span><kbd>N</kbd></span></li>
-            <li><span>詳細設定を開く</span> <span><kbd>⚙アイコン</kbd></span></li>
-        </ul>
-    </section>
+        <section id="settings-guide">
+            <h2>詳細設定・カスタマイズ</h2>
+            <p>画面右下の <kbd>⚙</kbd> アイコンをクリックすると別タブで設定画面が開きます。</p>
+            
+            <div class="guide-grid">
+                <div class="card">
+                    <h3>🖌 デザインの変更</h3>
+                    <p>時計やテロップのフォント（UD新ゴ/ロダン等）を選択できます。また、テロップの文字色や縁取りの太さを調整して、配信画面に馴染むデザインを作れます。</p>
+                </div>
+                <div class="card">
+                    <h3>📷 ライブカメラ登録</h3>
+                    <p>最大10枠の登録が可能です。YouTubeのURLをそのまま貼り付けるか、<code>&lt;iframe&gt;</code>タグを貼り付けるだけで、自動的にIDを抽出します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="presets">
+            <h2>おすすめプリセット</h2>
+            <div class="download-box">
+                <h3>届いてすぐに使える！おすすめ設定ファイル</h3>
+                <p>あらかじめ厳選したライブカメラ10選と、視認性の高いテロップデザインをセットにした設定ファイルを用意しました。</p>
+                <a href="assets/preset/sokuho_settings_20260416.json" download class="btn">プリセットをダウンロード (.json)</a>
+                
+                <div style="text-align: left; max-width: 500px; margin: 30px auto 0; font-size: 0.9em; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px;">
+                    <p><strong>反映方法：</strong></p>
+                    <p><span class="step-number">1</span> 設定画面の一番下にある「設定をインポート」をクリック</p>
+                    <p><span class="step-number">2</span> ダウンロードした <code>sokuho_settings_20260416.json</code> を選択</p>
+                    <p><span class="step-number">3</span> 画面が切り替わったら「設定を保存する」をクリックして完了！</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="news-info">
+            <h2>ニュース速報機能</h2>
+            <p>本ツールは1分ごとにNHKのRSSフィードを確認しています。新しいニュースが配信されると、以下の演出が行われます。</p>
+            <ul>
+                <li><strong>サウンド：</strong> 専用のチャイム音が鳴ります。</li>
+                <li><strong>テロップ：</strong> 画面上部に30秒間ニュースタイトルが表示されます。</li>
+            </ul>
+        </section>
+    </div>
 
     <footer>
-        <p>&copy; 2026 Kazeshiro Ra / Raimu Kabeya. All Rights Reserved.</p>
+        <p>速報くんα Project | Designed by Raimu Kabeya</p>
+        <p style="margin-top:10px; font-size: 0.8em;">※本ツールは個人利用を目的としており、各配信局の権利を侵害するものではありません。</p>
     </footer>
 
 </body>
