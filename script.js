@@ -264,6 +264,9 @@ window.addEventListener('load', () => {
 const P2P_EEW_API = "https://api.p2pquake.net/v2/history?codes=556&limit=1";
 let lastEEWId = null;
 
+// 音声ファイルの読み込み設定
+const eewAudio = new Audio('assets/audio/earthquake-ad.mp3');
+
 async function checkEEW() {
     try {
         const response = await fetch(P2P_EEW_API);
@@ -273,13 +276,11 @@ async function checkEEW() {
             const eew = data[0];
             const currentId = eew.id;
 
-            // 初回読み込み時はIDだけ記録して表示しない
             if (lastEEWId === null) {
                 lastEEWId = currentId;
                 return;
             }
 
-            // IDが変わった（新しい速報が出た）時だけ表示
             if (currentId !== lastEEWId) {
                 lastEEWId = currentId;
                 displayEEW(eew);
@@ -298,16 +299,17 @@ function displayEEW(data) {
     // 震源地セット
     hypoEl.innerText = `${data.earthquake.hypocenter.name}で地震`;
     
-    // 地域名セット（県名のみを抽出し、重複を削除）
-    const prefs = data.areas.map(a => a.name.replace(/南部|北部|東部|西部|中部|陸岸|海域/g, "")); 
-    const uniquePrefs = [...new Set(prefs)]; // 重複排除
-
+    // 地域名セット（細分区域そのまま）
     areasEl.innerHTML = "";
-    uniquePrefs.forEach(prefName => {
+    data.areas.forEach(a => {
         const span = document.createElement('span');
-        span.innerText = prefName;
+        span.innerText = a.name;
         areasEl.appendChild(span);
     });
+
+    // 音声を再生（ブラウザの仕様で、一度画面をクリックしていないと鳴らない場合があります）
+    eewAudio.currentTime = 0; // 再生位置を最初に戻す
+    eewAudio.play().catch(e => console.log("音声再生に失敗しました（画面を一度クリックしてください）:", e));
 
     // パッと表示
     container.classList.remove('hidden');
@@ -318,7 +320,10 @@ function displayEEW(data) {
     }, 180000);
 }
 
-/* --- テスト用関数（コンソール用） --- */
+checkEEW();
+setInterval(checkEEW, 2000);
+
+/* --- テスト用関数（コンソールから testEEW() で実行） --- */
 window.testEEW = function() {
     const dummy = {
         earthquake: { hypocenter: { name: "愛知県東部" } },
