@@ -67,6 +67,14 @@
         </div>
     </div>
 
+    <div class="settings-group">
+        <h3>データの管理</h3>
+            <button id="export-settings">設定をエクスポート (JSON)</button>
+            <button id="import-trigger">設定をインポート</button>
+            <input type="file" id="import-file" style="display:none" accept=".json">
+            <span id="io-status"></span>
+    </div>
+
     <script>
         const bc = new BroadcastChannel('sokuho_channel');
         let settings = {
