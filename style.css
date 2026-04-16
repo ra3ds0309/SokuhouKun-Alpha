@@ -283,7 +283,7 @@ body, html {
 }
 
 #eew-body {
-    padding: 16px 30px; /* 指定: 横30px 縦16px */
+    padding: 13px 30px; /* 指定: 横30px 縦16px */
     display: flex;
     flex-direction: column;
     align-items: flex-start; /* 水平: 左揃え */
