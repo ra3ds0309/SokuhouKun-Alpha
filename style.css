@@ -283,7 +283,7 @@ body, html {
 }
 
 #eew-body {
-    padding: 18px 30px; /* 指定: 横30px 縦24px */
+    padding: 16px 30px; /* 指定: 横30px 縦16px */
     display: flex;
     flex-direction: column;
     align-items: flex-start; /* 水平: 左揃え */
@@ -292,19 +292,19 @@ body, html {
 
 #eew-alert-msg {
     color: rgba(233, 33, 8, 1.0);
-    font-size: 28px; /* 指定: 28px */
+    font-size: 28px;
     font-weight: 900;
-    margin: 0 0 15px 0; /* 指定: 下15px */
+    margin: 0 0 8px 0; /* 指定: 下8px */
     font-feature-settings: "palt";
 }
 
 #eew-areas {
     color: rgba(34, 34, 34, 1.0);
-    font-size: 38px; /* 指定: 38px */
+    font-size: 38px;
     font-weight: 900;
     line-height: 1.3;
     display: flex;
     flex-wrap: wrap;
-    gap: 12px 25px; /* 指定: 下マージン12px相当をgapで調整 */
+    gap: 8px 25px; /* 下方向の隙間を調整 */
     font-feature-settings: "palt";
 }
