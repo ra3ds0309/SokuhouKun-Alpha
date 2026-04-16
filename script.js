@@ -262,17 +262,26 @@ window.addEventListener('load', () => {
 
 /* 緊急地震速報 */
 const P2P_EEW_API = "https://api.p2pquake.net/v2/history?codes=556&limit=1";
-let lastEEWTime = "";
+let lastEEWId = null;
 
 async function checkEEW() {
     try {
         const response = await fetch(P2P_EEW_API);
         const data = await response.json();
+        
         if (data.length > 0) {
             const eew = data[0];
-            // 新しい警報かチェック
-            if (eew.time !== lastEEWTime) {
-                lastEEWTime = eew.time;
+            const currentId = eew.id;
+
+            // 初回読み込み時はIDだけ記録して表示しない
+            if (lastEEWId === null) {
+                lastEEWId = currentId;
+                return;
+            }
+
+            // IDが変わった（新しい速報が出た）時だけ表示
+            if (currentId !== lastEEWId) {
+                lastEEWId = currentId;
                 displayEEW(eew);
             }
         }
@@ -286,14 +295,15 @@ function displayEEW(data) {
     const hypoEl = document.getElementById('eew-hypocenter');
     const areasEl = document.getElementById('eew-areas');
     
-    // 震源地
+    // 震源地セット
     hypoEl.innerText = `${data.earthquake.hypocenter.name}で地震`;
     
-    // 警戒地域を並べる
+    // 地域名セット
     areasEl.innerHTML = "";
     data.areas.forEach(a => {
         const span = document.createElement('span');
         span.innerText = a.name;
+        // マージンの代わりにspanで構成
         areasEl.appendChild(span);
     });
 
@@ -303,16 +313,16 @@ function displayEEW(data) {
     // 3分後にパッと消す
     setTimeout(() => {
         container.classList.add('hidden');
-    }, 180000); // 3分 = 180秒
+    }, 180000);
 }
 
-// 2秒おきにチェック（緊急性が高いため頻度を上げます）
+// 起動直後に一回実行（ここで初回IDをセット）し、その後2秒おきにチェック
+checkEEW();
 setInterval(checkEEW, 2000);
 
-/* --- コンソールテスト用 --- */
+/* --- テスト用関数（コンソールから testEEW() で実行） --- */
 window.testEEW = function() {
     const dummy = {
-        time: "test",
         earthquake: { hypocenter: { name: "愛知県東部" } },
         areas: [{ name: "愛知東部" }, { name: "愛知西部" }, { name: "静岡西部" }, { name: "長野南部" }]
     };
