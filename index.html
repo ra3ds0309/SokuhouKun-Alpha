@@ -34,22 +34,20 @@
     <div id="boot-container">
         <div id="boot-card" class="boot-hidden">
             <div class="boot-title">SYSTEM READY</div>
-            <div class="boot-version">読み込み完了 (v3.7)</div>
+            <div class="boot-version">読み込み完了 (v3.8)</div>
         </div>
     </div>
 
     /* 緊急地震速報 */
-    <div id="eew-super" class="hidden">
-        <div id="eew-line1">
-            <span id="eew-header-text">緊急地震速報</span>
-            <span id="eew-alert-text">強い揺れに警戒</span>
+    <div id="eew-telop-container" class="hidden">
+        <div class="eew-telop-row1">
+            <span class="eew-label-red">緊急地震速報</span>
+            <span class="eew-msg-yellow">強い揺れに警戒</span>
         </div>
-    <div id="eew-line2">
-        <div id="eew-areas-text"></div>
-    </div>
+    <div class="eew-telop-row2" id="eew-telop-areas"></div>
     </div>
 
-    <div id="eew-cancel-super" class="hidden">先ほどの緊急地震速報は取り消されました</div>
+    <div id="eew-cancel-telop" class="hidden">先ほどの緊急地震速報は取り消されました</div>
     
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="script.js"></script>
