@@ -292,9 +292,9 @@ body, html {
 
 #eew-alert-msg {
     color: rgba(233, 33, 8, 1.0);
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 900;
-    margin: 0 0 8px 0; /* 指定: 下8px */
+    margin: 0 0 2px 0; /* 指定: 下8px */
     font-feature-settings: "palt";
 }
 
