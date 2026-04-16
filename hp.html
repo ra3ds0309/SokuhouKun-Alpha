@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>速報くんα - 公式サイト</title>
+    <style>
+        :root {
+            --primary-color: #E92132;
+            --bg-dark: #222222;
+            --text-white: #FFFFFF;
+            --card-bg: #2d2d2d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            line-height: 1.6;
+        }
+
+        /* ヘッダー */
+        header {
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .version {
+            font-size: 0.8em;
+            background: var(--primary-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        /* ヒーローセクション */
+        .hero {
+            padding: 100px 5%;
+            text-align: center;
+            background: linear-gradient(180deg, #222222 0%, #333333 100%);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #cccccc;
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        /* 特徴セクション */
+        .features {
+            padding: 80px 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            border-top: 4px solid var(--primary-color);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* 操作説明セクション */
+        .how-to {
+            padding: 80px 5%;
+            background-color: #1a1a1a;
+        }
+
+        .kbd-list {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .kbd-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        kbd {
+            background: #444;
+            border-radius: 3px;
+            border: 1px solid #666;
+            color: #fff;
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            line-height: 1;
+            padding: 2px 4px;
+            white-space: nowrap;
+        }
+
+        /* フッター */
+        footer {
+            padding: 40px 5%;
+            text-align: center;
+            border-top: 1px solid #444;
+            color: #888;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 30px;
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">速報くんα <span class="version">v3.8</span></div>
+    </header>
+
+    <section class="hero">
+        <h1>日常に、リアルタイムの緊張感を。</h1>
+        <p>ライブカメラ、時計、ニュース速報。配信画面やデスクトップを、まるで報道センターのような空間に変えるウェブツール。</p>
+        <a href="index.html" class="btn">ツールを起動する</a>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <h3>🌐 ライブカメラ連携</h3>
+            <p>最大10箇所のライブカメラを登録可能。YouTubeのURLを貼り付けるだけで、あなただけの「観測網」が完成します。</p>
+        </div>
+        <div class="feature-card">
+            <h3>⚡ リアルタイム速報</h3>
+            <p>NHKのRSSフィードと連携し、最新ニュースを自動取得。専用のチャイムとともにテロップが画面を駆け抜けます。</p>
+        </div>
+        <div class="feature-card">
+            <h3>🎨 自由なカスタマイズ</h3>
+            <p>フォントの種類、文字の色、縁取りの太さまで。配信のスタイルに合わせて、ミリ単位の調整が可能です。</p>
+        </div>
+    </section>
+
+    <section class="how-to">
+        <h2 style="text-align: center; margin-bottom: 40px;">Shortcut Keys</h2>
+        <ul class="kbd-list">
+            <li><span>カメラ切り替え</span> <span><kbd>1</kbd> - <kbd>9</kbd> / <kbd>0</kbd></span></li>
+            <li><span>自動巡回（3分毎） ON/OFF</span> <span><kbd>S</kbd></span></li>
+            <li><span>手動ニュース表示（テスト用）</span> <span><kbd>N</kbd></span></li>
+            <li><span>詳細設定を開く</span> <span><kbd>⚙アイコン</kbd></span></li>
+        </ul>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Kazeshiro Ra / Raimu Kabeya. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
