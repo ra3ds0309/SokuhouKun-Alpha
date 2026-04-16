@@ -13,6 +13,11 @@
         input[type="text"], input[type="number"], select { background: #333; color: white; border: 1px solid #555; padding: 8px; border-radius: 4px; width: 100%; box-sizing: border-box; }
         input[type="color"] { background: none; border: none; width: 50px; height: 35px; cursor: pointer; }
         button { background: #d32f2f; color: white; border: none; padding: 12px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        
+        /* 管理ボタン用のスタイル */
+        .admin-buttons { margin-top: 30px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #444; padding-top: 20px; }
+        .btn-export { background: #444; }
+        .btn-import { background: #666; }
     </style>
 </head>
 <body>
@@ -61,18 +66,13 @@
             <div id="camera-inputs"></div>
         </section>
 
-        <div style="margin-top: 30px;">
+        <div class="admin-buttons">
             <button id="save-settings">設定を保存する</button>
-            <p id="save-status" style="display:inline; margin-left:15px; color:#4caf50;"></p>
-        </div>
-    </div>
-
-    <div class="settings-group">
-        <h3>データの管理</h3>
-            <button id="export-settings">設定をエクスポート (JSON)</button>
-            <button id="import-trigger">設定をインポート</button>
+            <button id="export-settings" class="btn-export">設定を書き出す</button>
+            <button id="import-trigger" class="btn-import">設定を読み込む</button>
             <input type="file" id="import-file" style="display:none" accept=".json">
-            <span id="io-status"></span>
+            <p id="save-status" style="display:inline; margin-left:5px; color:#4caf50;"></p>
+        </div>
     </div>
 
     <script>
@@ -86,19 +86,18 @@
             cameras: []
         };
 
-        function init() {
-            const saved = localStorage.getItem('sokuhoSettings');
-            if (saved) settings = JSON.parse(saved);
-
-            document.getElementById('clock-font').value = settings.clockFont || settings.font;
-            document.getElementById('ticker-font').value = settings.tickerFont || settings.font;
-            document.getElementById('ticker-color').value = settings.tickerColor || "#ffffff";
-            document.getElementById('ticker-stroke-color').value = settings.tickerStrokeColor || "#000000";
-            document.getElementById('ticker-stroke-width').value = settings.tickerStrokeWidth || 7;
+        // UIに入力値を反映させる関数
+        function applyToUI(data) {
+            document.getElementById('clock-font').value = data.clockFont || data.font || "";
+            document.getElementById('ticker-font').value = data.tickerFont || data.font || "";
+            document.getElementById('ticker-color').value = data.tickerColor || "#ffffff";
+            document.getElementById('ticker-stroke-color').value = data.tickerStrokeColor || "#000000";
+            document.getElementById('ticker-stroke-width').value = data.tickerStrokeWidth || 7;
 
             const container = document.getElementById('camera-inputs');
+            container.innerHTML = ""; // 一旦クリア
             for (let i = 0; i < 10; i++) {
-                const cam = settings.cameras[i] || { url: "", location: "" };
+                const cam = data.cameras[i] || { url: "", location: "" };
                 container.innerHTML += `<div style="display:flex; gap:10px; margin-bottom:10px;">
                     <input type="text" class="cam-loc" value="${cam.location}" placeholder="場所" style="width:120px;">
                     <input type="text" class="cam-url" value="${cam.url}" placeholder="URLまたはiframe" style="flex-grow:1;">
@@ -106,12 +105,27 @@
             }
         }
 
+        function init() {
+            const saved = localStorage.getItem('sokuhoSettings');
+            if (saved) settings = JSON.parse(saved);
+            applyToUI(settings);
+        }
+
         document.getElementById('btn-send-test').onclick = () => {
             const text = document.getElementById('test-text').value;
             if(text) bc.postMessage({ type: 'TEST_SOKUHO', text: text });
         };
 
+        // 保存処理
         document.getElementById('save-settings').onclick = () => {
+            const data = collectCurrentSettings();
+            localStorage.setItem('sokuhoSettings', JSON.stringify(data));
+            document.getElementById('save-status').innerText = "保存完了！";
+            setTimeout(() => document.getElementById('save-status').innerText = "", 2000);
+        };
+
+        // 現在の入力欄からデータを集める関数
+        function collectCurrentSettings() {
             const data = {
                 clockFont: document.getElementById('clock-font').value,
                 tickerFont: document.getElementById('ticker-font').value,
@@ -132,10 +146,50 @@
                     data.cameras.push({ url: val, location: locs[i].value });
                 }
             }
-            localStorage.setItem('sokuhoSettings', JSON.stringify(data));
-            document.getElementById('save-status').innerText = "保存完了！";
-            setTimeout(() => document.getElementById('save-status').innerText = "", 2000);
+            return data;
+        }
+
+        // --- エクスポート ---
+        document.getElementById('export-settings').onclick = () => {
+            const data = collectCurrentSettings(); // 最新の入力状態を書き出す
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const now = new Date();
+            const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+            
+            a.href = url;
+            a.download = `sokuho_settings_${dateStr}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
         };
+
+        // --- インポート ---
+        const fileInput = document.getElementById('import-file');
+        document.getElementById('import-trigger').onclick = () => fileInput.click();
+
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const json = JSON.parse(event.target.result);
+                    // 簡易チェック
+                    if (json.cameras) {
+                        applyToUI(json);
+                        alert("設定を読み込みました。「保存」を押すと確定されます。");
+                    } else {
+                        alert("有効な設定ファイルではありません。");
+                    }
+                } catch (err) {
+                    alert("ファイルの読み込みに失敗しました。");
+                }
+            };
+            reader.readAsText(file);
+        };
+
         init();
     </script>
 </body>
